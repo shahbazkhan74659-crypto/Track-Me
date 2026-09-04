@@ -39,7 +39,7 @@ Install PostgreSQL locally (or run it via a local container) and confirm it's re
 ### Completion Criteria
 A local PostgreSQL server is running and reachable (verified via a client connection), with a dev database created and ready for the application to connect to once it exists.
 
-**Status: Not started.** Install method decided (native Windows install, not Docker — see `DECISIONS.md`), but the owner has explicitly said not to start Phase 1 yet. See `TASKS.md`.
+**Status: Complete.** A PostgreSQL server was already installed and running natively on the machine (Windows service `postgresql-x64-18`, PostgreSQL 18.4, port 5432) — predating this project, likely from another local project — so no fresh `winget` install of v17 was needed; the existing v18 instance was reused instead. A dedicated `trackme_dev` database was created on it and connection verified via `psql` (both to the server and to `trackme_dev` directly). See `DECISIONS.md`'s "Reused pre-existing local PostgreSQL 18" entry.
 
 ## Phase 2 — Temporary Backend Test Page
 

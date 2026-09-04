@@ -79,3 +79,12 @@ These decisions were made during initial prototyping. They are recorded here as 
 - Decision: Install PostgreSQL natively on Windows (a real background service), not inside a Docker container.
 - Reasoning: Owner's explicit choice between the two offered options.
 - Consequences: Phase 1 will run PostgreSQL as a native Windows service rather than a container — no Docker dependency for local dev going forward. The actual install has **not been run yet** — the owner has explicitly said not to start Phase 1 execution yet; this decision only fixes the method for whenever Phase 1 does begin. See `TASKS.md`/`PHASES.md`.
+
+## Decision: Reused pre-existing local PostgreSQL 18 instead of installing v17 via winget
+
+- Status: Accepted
+- Date: 2026-09-04
+- Context: When Phase 1 execution began, the machine was checked for an existing install before running the planned `winget` install. PostgreSQL was already present and running as a Windows service (`postgresql-x64-18`, PostgreSQL 18.4, listening on port 5432), installed 2026-07-05 — predating this project's stack-lock conversation, almost certainly for another local project on the same machine. No native PostgreSQL 17 was ever installed via `winget`.
+- Decision: Reuse the existing local PostgreSQL 18 service for Track Me's local development rather than installing PostgreSQL 17 alongside it. Created a dedicated `trackme_dev` database on this instance (owner-supplied `postgres` superuser credentials) rather than a fresh v17 instance.
+- Reasoning: A working local Postgres server already exists and is reachable; installing a second, differently-versioned instance solely to match the earlier v17 plan would add complexity (port conflicts, service management) for no real benefit. Postgres 18 is a superset of 17 for this app's purposes — no feature this app needs is v17-specific.
+- Consequences: Supersedes the "Local PostgreSQL via native Windows install" decision above — that decision's *method* (native Windows service, not Docker) still holds since the existing instance is exactly that, but its *version* (17) and *action* (fresh install via winget) were not carried out. Local dev now runs against PostgreSQL 18.4, not 17. Production (Neon) version compatibility should be double-checked against 18 when Phase 15 (Neon setup) is reached, rather than assuming 17. See `PHASES.md`, `TASKS.md`.

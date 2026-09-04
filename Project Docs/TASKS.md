@@ -6,7 +6,7 @@ None actively in progress.
 
 ## Next
 
-The owner locked the full Phase 0–18 roadmap on 2026-09-04 (see `PHASES.md`). [Phase 1] "Local PostgreSQL Setup" is next in line, with its install method already decided (native Windows install via `winget`, package `PostgreSQL.PostgreSQL.17` — not Docker, see `DECISIONS.md`), but **explicitly not started yet** — the owner said "don't start Phase 1" (2026-09-04). Do not run the install, scaffold anything, or start any phase's work until the owner gives the go-ahead.
+The owner locked the full Phase 0–18 roadmap on 2026-09-04 (see `PHASES.md`). [Phase 1] "Local PostgreSQL Setup" is complete (2026-09-04) — see Completed below. [Phase 2] "Temporary Backend Test Page" is next in line but **not started** — do not begin it or scaffold anything until the owner gives the go-ahead, consistent with this project's established pattern.
 
 Note 2026-09-04: a first attempt to jump straight into scaffolding the Next.js project (before Phase 1's database setup) was interrupted and reverted by the owner — "we are not going to start coding yet." The owner then scoped Phase 1 down to local database setup only, separately confirmed not to start executing it yet, and then locked the full downstream roadmap (Phases 2–18) in one message.
 
@@ -28,3 +28,4 @@ None.
 - [x] [Phase 0a] Lock production stack: Next.js (TypeScript), React frontend with AJAX-driven updates, PostgreSQL (local dev / Neon production), Render (free tier), UptimeRobot keep-alive — 2026-09-04
 - [x] Split Phase 1 to local PostgreSQL setup only, and decide its install method (native Windows, via `winget`) — 2026-09-04
 - [x] Lock the full downstream roadmap, Phase 2 through Phase 18 — see `PHASES.md` — 2026-09-04
+- [x] [Phase 1] Local PostgreSQL Setup: found a pre-existing local PostgreSQL 18 service already running (not the planned fresh v17 install), created the `trackme_dev` database on it, and verified connectivity to both the server and the new database via `psql` — 2026-09-04. See `DECISIONS.md`'s "Reused pre-existing local PostgreSQL 18" entry.
