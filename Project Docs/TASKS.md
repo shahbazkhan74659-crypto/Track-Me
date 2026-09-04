@@ -6,7 +6,9 @@ None actively in progress.
 
 ## Next
 
-[Phase 1] "Production Project Setup" is defined and ready to start (see `PHASES.md`): scaffold the Next.js + TypeScript project, connect local Postgres, define the initial schema, provision Neon + Render, and wire up UptimeRobot. Not started yet — awaiting the owner's go-ahead to begin implementation.
+[Phase 1] "Local PostgreSQL Setup" is defined and ready to start (see `PHASES.md`): get a local PostgreSQL database installed, running, and ready to use — no application code yet. [Phase 2] "Production Project Setup" (Next.js scaffold, schema, Neon/Render/UptimeRobot) follows once Phase 1 is done.
+
+Note 2026-09-04: a first attempt to jump straight into scaffolding the Next.js project (before Phase 1's database setup) was interrupted and reverted by the owner — "we are not going to start coding yet." The owner then explicitly scoped Phase 1 down to local database setup only. Do not scaffold the Next.js project until Phase 1 is actually complete.
 
 Still open, not blocking Phase 1: whether the deployed app needs a simple password/PIN access gate, since it will be reachable by anyone with the URL (see `DECISIONS.md`'s "Production stack locked" entry).
 
