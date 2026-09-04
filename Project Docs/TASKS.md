@@ -6,9 +6,9 @@ None actively in progress.
 
 ## Next
 
-[Phase 1] "Local PostgreSQL Setup" is defined and ready to start (see `PHASES.md`): get a local PostgreSQL database installed, running, and ready to use — no application code yet. [Phase 2] "Production Project Setup" (Next.js scaffold, schema, Neon/Render/UptimeRobot) follows once Phase 1 is done.
+[Phase 1] "Local PostgreSQL Setup" is defined, with its install method decided (native Windows install via `winget`, package `PostgreSQL.PostgreSQL.17` — not Docker, see `DECISIONS.md`), but **explicitly not started yet** — the owner said "don't start Phase 1" (2026-09-04). Do not run the install or any other Phase 1 step until the owner gives the go-ahead. [Phase 2] "Production Project Setup" (Next.js scaffold, schema, Neon/Render/UptimeRobot) follows once Phase 1 is actually done.
 
-Note 2026-09-04: a first attempt to jump straight into scaffolding the Next.js project (before Phase 1's database setup) was interrupted and reverted by the owner — "we are not going to start coding yet." The owner then explicitly scoped Phase 1 down to local database setup only. Do not scaffold the Next.js project until Phase 1 is actually complete.
+Note 2026-09-04: a first attempt to jump straight into scaffolding the Next.js project (before Phase 1's database setup) was interrupted and reverted by the owner — "we are not going to start coding yet." The owner then explicitly scoped Phase 1 down to local database setup only, and separately confirmed not to start executing it yet either. Do not scaffold the Next.js project or install PostgreSQL until told to proceed.
 
 Still open, not blocking Phase 1: whether the deployed app needs a simple password/PIN access gate, since it will be reachable by anyone with the URL (see `DECISIONS.md`'s "Production stack locked" entry).
 

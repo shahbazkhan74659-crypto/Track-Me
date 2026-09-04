@@ -39,7 +39,7 @@ Install PostgreSQL locally (or run it via a local container) and confirm it's re
 ### Completion Criteria
 A local PostgreSQL server is running and reachable (verified via a client connection), with a dev database created and ready for the application to connect to once it exists.
 
-**Status: Not started.**
+**Status: Not started.** Install method decided (native Windows install, not Docker — see `DECISIONS.md`), but the owner has explicitly said not to start Phase 1 yet. See `TASKS.md`.
 
 ## Phase 2 — Production Project Setup
 
