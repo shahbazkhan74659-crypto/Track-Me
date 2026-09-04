@@ -1,6 +1,6 @@
 # Development Phases
 
-The project owner has not yet defined a numbered production build roadmap beyond the initial prototyping stage recorded below as **Phase 0 — Pre-Development**. Do not invent additional phases beyond what is listed here — see `CLAUDE.md` rule 3. When the owner defines Phase 1 and beyond (production stack, implementation order), record it here.
+The project owner has defined Phase 0 (prototyping, complete) and locked the production stack (see `DECISIONS.md`), which Phase 1 below is scoped directly from. Beyond Phase 1, no further numbered phases have been defined yet. Do not invent additional phases beyond what is listed here — see `CLAUDE.md` rule 3.
 
 ## Phase 0 — Pre-Development (Planning & Prototyping)
 
@@ -26,4 +26,17 @@ An interactive Claude Design Components prototype (`prototype/Main.dc.html`, see
 - 0a: Feature set defined (done); production stack chosen (not yet done).
 - 0b: Complete — interactive prototype exists, demonstrates the full intended flow, and is confirmed/approved by the owner (2026-09-04, dark theme).
 
-**Phase 0 overall status: 0b complete; 0a (stack/persistence decisions) still open.**
+**Phase 0 overall status: Complete.** 0b was already complete; 0a's remaining open item (production stack) was resolved 2026-09-04 — see `DECISIONS.md`.
+
+## Phase 1 — Production Project Setup
+
+### Objective
+Initialize the real, deployable Next.js (TypeScript) project on the locked stack, and confirm it runs end-to-end — a working page served locally, backed by a real Postgres connection — before building out the app's actual features on top of it.
+
+### Scope
+Scaffold a Next.js + TypeScript project; connect it to a local PostgreSQL database for development; define the initial schema for attendance entries and the per-day salary rate (see `ARCHITECTURE.md`'s Planned Production Architecture for the intended shape, carried over from the prototype's `entries` structure). Provision the Neon (production) database and a Render deployment, and confirm a minimal deployed page loads over the public URL. Configure the UptimeRobot keep-alive ping against that deployed URL. Building out the actual calendar/attendance UI and API routes is not part of this phase's scope — that follows in a later phase once the base project is confirmed working.
+
+### Completion Criteria
+`next dev` serves a page locally with a confirmed local Postgres connection; the same project is deployed on Render and reachable at a public URL, backed by Neon; UptimeRobot is monitoring that URL.
+
+**Status: Not started.**

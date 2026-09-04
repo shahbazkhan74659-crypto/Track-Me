@@ -49,7 +49,7 @@ Pre-development / prototyping stage. One interactive visual prototype exists and
 
 ## Constraints
 
-To be defined — production platform target (web app, desktop, mobile), hosting, and persistence approach have not yet been decided.
+Production stack locked 2026-09-04: Next.js (TypeScript), React frontend with AJAX-driven updates, PostgreSQL (local for dev, Neon for production), deployed on Render's free tier with an UptimeRobot keep-alive ping. See `DECISIONS.md`. Must be deployed and reachable in a browser — it's for someone other than the owner to use, not confined to one person's local browser storage. Whether the deployed app needs any access protection (password/PIN) is still open — see `TASKS.md`.
 
 ## Scope
 

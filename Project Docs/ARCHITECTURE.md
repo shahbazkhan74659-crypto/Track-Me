@@ -1,6 +1,6 @@
 # Architecture
 
-This describes the **actual current implementation** — an interactive design prototype only. No production application exists yet. See `DECISIONS.md` for the reasoning behind building it this way, and `PROJECT.md`/`PHASES.md` for what comes next.
+This describes the **actual current implementation** — an interactive design prototype only. No production application exists yet. See `DECISIONS.md` for the reasoning behind building it this way, and `PROJECT.md`/`PHASES.md` for what comes next. The **Planned Production Architecture** section below records the locked stack ahead of any of it being built — see `CLAUDE.md` rule 9: do not treat anything in that section as implemented until it actually is.
 
 ## System Overview
 
@@ -45,3 +45,15 @@ Documented so a future production build doesn't regress behavior already establi
 - Earned So Far = (present days × per-day rate) + (half days × per-day rate ÷ 2), summed over entries in the currently displayed month only.
 - Net Payable = Earned So Far − Advance Taken, both computed over the currently displayed month only (not the whole year, not "up to today" if viewing a different month).
 - Calendar navigation (prev/next month) rolls the year over automatically at the Dec/Jan boundary; there is a separate "Today" shortcut back to the current month.
+
+## Planned Production Architecture
+
+**Not yet built.** Recorded here so the production build has a target — see `DECISIONS.md`'s "Production stack locked" entry and `PHASES.md`.
+
+- **Framework:** Next.js, written in TypeScript, for both the frontend and the backend — one project, one language. No separate Express/API server.
+- **Frontend:** Plain React (via Next.js), not a server-rendered-template-plus-islands layer — there's no separate template engine to embed React into, unlike the `core`/Django-templates approach used in `C:\Portfolio`. Interactive actions (saving a date entry, changing salary, live stat recalculation) call Next.js API routes via `fetch` (AJAX-style, no full page reloads), carrying forward the interaction feel already established by the prototype.
+- **Backend:** Next.js API routes / route handlers, same project as the frontend.
+- **Database:** PostgreSQL — a local Postgres install for day-to-day development, Neon (serverless Postgres) in production. Replaces the prototype's in-memory `entries` object with real persisted rows; the prototype's entry shape (`{ status, advanceOn, advance }` keyed by date) and its invariants above are the intended starting schema shape, not a redesign.
+- **Hosting:** Render, free tier.
+- **Uptime:** An UptimeRobot monitor pinging the deployed app, to counter Render free tier's idle spin-down (same reason this pattern is used in `C:\Portfolio`).
+- **Auth:** Not yet decided — the app is single-user by design (see `DECISIONS.md`), but whether the deployed instance needs a simple password/PIN gate (since it's reachable by anyone with the URL) is still open. See `TASKS.md`.
