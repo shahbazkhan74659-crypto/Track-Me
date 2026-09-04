@@ -1,6 +1,6 @@
 # Development Phases
 
-The project owner has defined the full development roadmap, Phase 0 through Phase 18 (locked 2026-09-04). Phase 0 is complete; the production stack is locked (see `DECISIONS.md`). Phase 2 was originally a single broad "Production Project Setup" phase — the owner replaced it with the detailed Phase 2–18 breakdown below in the same message that locked the roadmap. Do not invent additional phases beyond what is listed here, and do not reorder or renumber these — see `CLAUDE.md` rule 3.
+The project owner has defined the full development roadmap, Phase 0 through Phase 19 (locked 2026-09-04; renumbered 2026-09-04 to inject Phase 14). Phase 0 is complete; the production stack is locked (see `DECISIONS.md`). Phase 2 was originally a single broad "Production Project Setup" phase — the owner replaced it with the detailed Phase 2–18 breakdown below in the same message that locked the roadmap. The owner later injected a new Phase 14 ("Mobile View / Mobile Responsive"), pushing what was Phase 14–18 to Phase 15–19 — see `DECISIONS.md`'s "Phase 14 injected for mobile responsiveness" entry. Do not invent additional phases beyond what is listed here, and do not reorder or renumber these without the owner explicitly directing it — see `CLAUDE.md` rule 3.
 
 ## Phase 0 — Pre-Development (Planning & Prototyping)
 
@@ -137,35 +137,45 @@ Connect every static card, button, profile element, and the calendar on the fron
 
 **Status: Not started.**
 
-## Phase 14 — End-to-End Testing & Production Readiness
+## Phase 14 — Mobile View / Mobile Responsive
+
+### Objective
+Make the full site fully mobile responsive.
+
+### Scope
+Injected into the roadmap 2026-09-04 (originally Phase 0–18 had no dedicated mobile-responsiveness phase) — see `DECISIONS.md`'s "Phase 14 injected for mobile responsiveness" entry. Placed after Phase 13 (frontend fully wired to the backend) and before end-to-end testing/production readiness, so responsiveness work happens once the app is functionally complete but before final testing and deployment.
+
+**Status: Not started.**
+
+## Phase 15 — End-to-End Testing & Production Readiness
 
 ### Objective
 Test the fully wired app end to end and make it production-ready for deployment on Render's free tier.
 
 **Status: Not started.**
 
-## Phase 15 — Neon PostgreSQL Setup
+## Phase 16 — Neon PostgreSQL Setup
 
 ### Objective
 Provision the Neon PostgreSQL production database and store its connection credentials in `.env`.
 
 **Status: Not started.**
 
-## Phase 16 — Deployment on Render
+## Phase 17 — Deployment on Render
 
 ### Objective
 Deploy the app to Render.
 
 **Status: Not started.**
 
-## Phase 17 — UptimeRobot Setup
+## Phase 18 — UptimeRobot Setup
 
 ### Objective
 Configure an UptimeRobot keep-alive monitor against the deployed app.
 
 **Status: Not started.**
 
-## Phase 18 — Live Site End-to-End Testing
+## Phase 19 — Live Site End-to-End Testing
 
 ### Objective
 Test the deployed, live site end to end.

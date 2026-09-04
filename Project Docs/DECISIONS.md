@@ -80,6 +80,15 @@ These decisions were made during initial prototyping. They are recorded here as 
 - Reasoning: Owner's explicit choice between the two offered options.
 - Consequences: Phase 1 will run PostgreSQL as a native Windows service rather than a container — no Docker dependency for local dev going forward. The actual install has **not been run yet** — the owner has explicitly said not to start Phase 1 execution yet; this decision only fixes the method for whenever Phase 1 does begin. See `TASKS.md`/`PHASES.md`.
 
+## Decision: Phase 14 injected for mobile responsiveness
+
+- Status: Accepted
+- Date: 2026-09-04
+- Context: The originally locked Phase 0–18 roadmap had no dedicated phase for making the site mobile responsive.
+- Decision: Insert a new Phase 14, "Mobile View / Mobile Responsive" — make the full site fully mobile responsive — positioned after Phase 13 (frontend fully wired to backend) and before end-to-end testing/production readiness. Every phase from the old Phase 14 onward shifts up by one: old 14→15 (End-to-End Testing & Production Readiness), 15→16 (Neon PostgreSQL Setup), 16→17 (Deployment on Render), 17→18 (UptimeRobot Setup), 18→19 (Live Site End-to-End Testing). The roadmap is now Phase 0–19.
+- Reasoning: Owner's explicit instruction. Placing it after the app is functionally wired but before final E2E testing/deployment means responsiveness work happens once, against a feature-complete app, rather than being redone piecemeal as each frontend phase (9–13) lands.
+- Consequences: `PHASES.md` renumbered accordingly. Any future reference to "Phase 14" through "Phase 18" in older notes/commits predates this renumbering and refers to the old numbering — check dates. `CLAUDE.md`'s Project-Specific Notes updated to match.
+
 ## Decision: Phase 3 narrowed to login-only — no signup
 
 - Status: Accepted
