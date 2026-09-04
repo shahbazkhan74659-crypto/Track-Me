@@ -1,6 +1,6 @@
 # Development Phases
 
-The project owner has defined Phase 0 (prototyping, complete) and locked the production stack (see `DECISIONS.md`), which Phases 1–2 below are scoped directly from. The owner explicitly split what was originally one "Production Project Setup" phase into a dedicated local-database-setup phase (Phase 1) ahead of the application scaffold (Phase 2) — 2026-09-04. Beyond Phase 2, no further numbered phases have been defined yet. Do not invent additional phases beyond what is listed here — see `CLAUDE.md` rule 3.
+The project owner has defined the full development roadmap, Phase 0 through Phase 18 (locked 2026-09-04). Phase 0 is complete; the production stack is locked (see `DECISIONS.md`). Phase 2 was originally a single broad "Production Project Setup" phase — the owner replaced it with the detailed Phase 2–18 breakdown below in the same message that locked the roadmap. Do not invent additional phases beyond what is listed here, and do not reorder or renumber these — see `CLAUDE.md` rule 3.
 
 ## Phase 0 — Pre-Development (Planning & Prototyping)
 
@@ -41,15 +41,121 @@ A local PostgreSQL server is running and reachable (verified via a client connec
 
 **Status: Not started.** Install method decided (native Windows install, not Docker — see `DECISIONS.md`), but the owner has explicitly said not to start Phase 1 yet. See `TASKS.md`.
 
-## Phase 2 — Production Project Setup
+## Phase 2 — Temporary Backend Test Page
 
 ### Objective
-Initialize the real, deployable Next.js (TypeScript) project on the locked stack, and confirm it runs end-to-end — a working page served locally, connected to the Phase 1 local Postgres database — before building out the app's actual features on top of it.
+A minimal, plain white HTML page whose only purpose is exercising and testing the backend engines built in Phases 3–7, before any real frontend exists.
 
-### Scope
-Scaffold a Next.js + TypeScript project; connect it to the Phase 1 local PostgreSQL database; define the initial schema for attendance entries and the per-day salary rate (see `ARCHITECTURE.md`'s Planned Production Architecture for the intended shape, carried over from the prototype's `entries` structure). Provision the Neon (production) database and a Render deployment, and confirm a minimal deployed page loads over the public URL. Configure the UptimeRobot keep-alive ping against that deployed URL. Building out the actual calendar/attendance UI and API routes is not part of this phase's scope — that follows in a later phase once the base project is confirmed working.
+**Status: Not started.**
 
-### Completion Criteria
-`next dev` serves a page locally with a confirmed local Postgres connection; the same project is deployed on Render and reachable at a public URL, backed by Neon; UptimeRobot is monitoring that URL.
+## Phase 3 — Login/Signup Backend
+
+### Objective
+Build the backend for login/signup.
+
+**Status: Not started.**
+
+## Phase 4 — Salary Setup Modal Backend
+
+### Objective
+Build the backend behind the Salary Setup modal (per-day rate).
+
+**Status: Not started.**
+
+## Phase 5 — Calendar Backend
+
+### Objective
+Build the backend behind the calendar.
+
+**Status: Not started.**
+
+## Phase 6 — Clickable Date Modal Backend
+
+### Objective
+Build the backend behind the clickable per-date entry modal.
+
+**Status: Not started.**
+
+## Phase 7 — Salary / Advance / Attendance Calculation Backend
+
+### Objective
+Build the backend for total salary, advance, leave, and present-day calculations.
+
+**Status: Not started.**
+
+## Phase 8 — Full Backend Testing & Temporary Page Removal
+
+### Objective
+Test every backend engine built in Phases 2–7 end to end, then delete the Phase 2 temporary test HTML page.
+
+**Status: Not started.**
+
+## Phase 9 — React Frontend: Blank Dark-Themed Shell
+
+### Objective
+Start the React frontend on the locked stack with a blank, dark-themed page matching the approved prototype's look.
+
+**Status: Not started.**
+
+## Phase 10 — Calendar on Frontend
+
+### Objective
+Build the calendar UI on the frontend, matching the approved prototype.
+
+**Status: Not started.**
+
+## Phase 11 — Stat Cards on Frontend
+
+### Objective
+Build the Total Salary, Advance Taken, and Net Salary stat cards on the frontend, matching the approved prototype.
+
+**Status: Not started.**
+
+## Phase 12 — Profile & Salary Setup on Frontend
+
+### Objective
+Build the profile name/icon, the Salary Setup button, and the per-day salary display on the frontend, matching the approved prototype.
+
+**Status: Not started.**
+
+## Phase 13 — Wire Frontend to Backend
+
+### Objective
+Connect every static card, button, profile element, and the calendar on the frontend to the real backend built in Phases 3–7.
+
+**Status: Not started.**
+
+## Phase 14 — End-to-End Testing & Production Readiness
+
+### Objective
+Test the fully wired app end to end and make it production-ready for deployment on Render's free tier.
+
+**Status: Not started.**
+
+## Phase 15 — Neon PostgreSQL Setup
+
+### Objective
+Provision the Neon PostgreSQL production database and store its connection credentials in `.env`.
+
+**Status: Not started.**
+
+## Phase 16 — Deployment on Render
+
+### Objective
+Deploy the app to Render.
+
+**Status: Not started.**
+
+## Phase 17 — UptimeRobot Setup
+
+### Objective
+Configure an UptimeRobot keep-alive monitor against the deployed app.
+
+**Status: Not started.**
+
+## Phase 18 — Live Site End-to-End Testing
+
+### Objective
+Test the deployed, live site end to end.
 
 **Status: Not started.**

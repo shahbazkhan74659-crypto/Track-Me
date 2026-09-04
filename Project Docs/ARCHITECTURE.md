@@ -56,4 +56,4 @@ Documented so a future production build doesn't regress behavior already establi
 - **Database:** PostgreSQL — a local Postgres install for day-to-day development, Neon (serverless Postgres) in production. Replaces the prototype's in-memory `entries` object with real persisted rows; the prototype's entry shape (`{ status, advanceOn, advance }` keyed by date) and its invariants above are the intended starting schema shape, not a redesign.
 - **Hosting:** Render, free tier.
 - **Uptime:** An UptimeRobot monitor pinging the deployed app, to counter Render free tier's idle spin-down (same reason this pattern is used in `C:\Portfolio`).
-- **Auth:** Not yet decided — the app is single-user by design (see `DECISIONS.md`), but whether the deployed instance needs a simple password/PIN gate (since it's reachable by anyone with the URL) is still open. See `TASKS.md`.
+- **Auth:** A real login/signup backend, per `PHASES.md`'s Phase 3 — resolves the earlier open question of whether the deployed app needs access protection. The app remains single-user in scope (not multi-tenant); see `DECISIONS.md`'s "Login/signup backend added to the roadmap" entry.

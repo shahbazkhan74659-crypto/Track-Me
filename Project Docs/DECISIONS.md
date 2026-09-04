@@ -4,12 +4,21 @@ These decisions were made during initial prototyping. They are recorded here as 
 
 ## Decision: Personal, single-user scope — no authentication planned
 
-- Status: Accepted
+- Status: **Partially superseded** (2026-09-04) — the "no authentication" half is reversed by the locked Phase 3 "Login/Signup Backend" (see `PHASES.md`); the single-user-scope half still stands (see "Login/signup added" below).
 - Date: 2026-09-04
 - Context: The owner described the app explicitly as "for personal use" / "a single user self attendance record app."
 - Decision: Treat the app as strictly single-user. No login/authentication system is in scope unless the owner says otherwise.
 - Reasoning: Matches the original brief verbatim.
-- Consequences: Production architecture decisions (e.g. whether there's a real backend at all vs. a purely client-side/local-storage app) should default to single-user assumptions unless revisited. See `PROJECT.md`'s Non-Goals.
+- Consequences: Superseded same-day once the owner locked a roadmap that includes a login/signup phase — see below.
+
+## Decision: Login/Signup backend added to the roadmap
+
+- Status: Accepted
+- Date: 2026-09-04
+- Context: The owner's locked Phase 0–18 roadmap (see `PHASES.md`) includes Phase 3, "Login/Signup Backend" — reversing the earlier "no authentication planned" decision above. This also resolves the previously-open question (see `TASKS.md`) of whether the deployed app needs any access protection, since it's reachable by anyone with the URL and built for someone other than the owner to use.
+- Decision: The production app will have a real login/signup backend (Phase 3). The app's single-user *scope* is unaffected — this isn't becoming a multi-tenant product — but it will no longer be open to anyone with the link; the owner has not further specified whether "single-user" means exactly one fixed account or a signup flow that could, in principle, create more than one.
+- Reasoning: Owner's explicit roadmap; specific reasoning beyond that wasn't stated — marked here rather than guessed.
+- Consequences: `PROJECT.md`'s Non-Goals ("no login/authentication system is in scope") is now stale and needs correcting. `ARCHITECTURE.md`'s Planned Production Architecture ("Auth: not yet decided") is superseded — auth is now Phase 3, not an open question. See both files.
 
 ## Decision: Prototype built as a Claude Design Components canvas, not hand-coded
 

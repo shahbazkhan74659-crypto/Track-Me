@@ -24,7 +24,7 @@ Give the owner one place to mark each day's attendance status, optionally record
 
 ## Non-Goals
 
-- Not a multi-user or multi-tenant product. No login/authentication system is in scope — this is a personal, single-user tool (see `DECISIONS.md`).
+- Not a multi-user or multi-tenant product — it's a personal, single-user tool. (A login/signup backend is now planned, Phase 3 in `PHASES.md`, to gate access since the app is deployed for someone other than the owner — this adds authentication, it does not make the app multi-tenant. See `DECISIONS.md`.)
 - Not a payroll/HR system for teams or organizations.
 - Not intended to model complex pay structures (overtime, taxes, deductions beyond a simple advance) unless the owner asks for that later.
 

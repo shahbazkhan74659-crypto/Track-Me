@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Rules and instructions for how Claude should work in this repository.
+Rules and instructions for how Claude should work in this repository. The first ever rule is never commit and push anything until i say
 
 ## Project Documentation System
 
@@ -82,8 +82,8 @@ A single change may require updates to multiple files.
 
 ## Project-Specific Notes
 
-- **As of 2026-09-04**, the repository (`C:\RajuApp`) contains only `prototype/`: `Main.dc.html` (hand-authored Claude Design Components source), `canvas.json` (single-artboard canvas layout), and `attendance-tracker.html` (the seeded, publishable canvas payload). No production app code, framework, backend, or database exists. The repository is **not** git-initialized.
+- **As of 2026-09-04**, the repository (`C:\RajuApp`) contains `prototype/` (`Main.dc.html`, `canvas.json`, `attendance-tracker.html` — the approved prototype) and `Project Docs/` (this documentation system). No production app code, framework, backend, or database exists yet. The repository **is** git-initialized (`git init` + an initial commit, 2026-09-04) — do not re-run `git init`. Per the rule at the top of this file, do not `git commit` or `git push` anything, including documentation changes, until the owner explicitly says to.
 - The prototype is a Claude Design Components (`.dc.html`) artifact, not a standalone runnable web app — it only runs inside the sandboxed Design canvas/Artifact viewer. It has been published as a Claude Artifact (canvas) at `https://claude.ai/code/artifact/7dbcdd35-2167-4212-917e-1740c0fe785c`. Do not treat it as deployable source; a production build will be written fresh, using the prototype only as a visual/interaction reference — see `DECISIONS.md`.
 - The prototype uses sample/default data only (per-day salary defaults to ₹800, no attendance entries pre-seeded, all state lives in-memory in the browser tab and is lost on reload). Do not treat prototype numbers as real biographical or financial data.
 - The client approved the prototype's design and dark-theme styling on 2026-09-04 (see `DECISIONS.md`) — treat this as the confirmed visual direction for any production implementation.
-- No production tech stack (framework, hosting, persistence approach) has been chosen yet. Do not assume one and do not start production implementation until the project owner explicitly decides and asks for it — see `PHASES.md`/`TASKS.md`.
+- The production stack is locked (Next.js/TypeScript, PostgreSQL local-dev/Neon-production, Render, UptimeRobot, a real login/signup backend — see `DECISIONS.md`), and the owner has locked the full development roadmap, Phase 0 through Phase 18 (see `PHASES.md`). Phase 0 is complete. **Do not start any phase's actual implementation work (including Phase 1) until the owner explicitly says to begin it** — locking the stack/roadmap is not the same as authorizing execution. See `TASKS.md` for the current go/no-go state.
