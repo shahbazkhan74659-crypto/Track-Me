@@ -44,7 +44,7 @@ Never silently modify, delete, or replace important documentation. If a change m
 Do not create additional Markdown documentation files unless information genuinely cannot fit into these six. Assume these six are sufficient by default.
 
 ### 9. Actual Project State
-Documentation must always reflect the actual project state. Never document a feature, architecture, system, component, or integration as completed when it is not actually implemented. As of this writing, RajuApp is a client-approved **interactive prototype only** — no production backend, framework, or database exists yet. Do not describe it otherwise.
+Documentation must always reflect the actual project state. Never document a feature, architecture, system, component, or integration as completed when it is not actually implemented. As of this writing, Track Me (see `PROJECT.md` for the app's name) is a client-approved **interactive prototype only** — no production backend, framework, or database exists yet. Do not describe it otherwise.
 
 ### 10. Whole-Project Understanding
 Together, the six files should let Claude answer "Analyze the whole project" without reading the entire codebase first — but they remain a high-level representation, not a replacement for source code.

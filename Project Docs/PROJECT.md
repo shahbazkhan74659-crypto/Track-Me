@@ -2,7 +2,7 @@
 
 ## Overview
 
-RajuApp is a personal attendance and salary record app, built for a single owner to track their own day-by-day attendance (Present / Half-Day / Leave) and any salary advances taken, and to see their earned and net-payable salary for the current month update live as they log it.
+**Track Me** (app name, chosen 2026-09-04 — "for now," per the owner, so treat it as the current working name rather than permanently final) is a personal attendance and salary record app, built for a single owner to track their own day-by-day attendance (Present / Half-Day / Leave) and any salary advances taken, and to see their earned and net-payable salary for the current month update live as they log it. The project's folder/repo on disk (`C:\RajuApp`) and its GitHub remote (`Track-Me`) predate this name and are not being renamed to match — this file is the source of truth for the app's actual name.
 
 The app currently exists only as a client-approved, interactive visual prototype (`prototype/Main.dc.html`, published as a Claude Design canvas/Artifact). No production backend, framework, or database has been built. See `ARCHITECTURE.md` for what actually exists, and `DECISIONS.md` for decisions made so far.
 
