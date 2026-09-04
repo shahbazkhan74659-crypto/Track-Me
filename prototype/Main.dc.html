@@ -1,0 +1,437 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; -webkit-font-smoothing: antialiased; }
+    a { color: oklch(70% 0.15 262); }
+    a:hover { color: oklch(76% 0.12 262); }
+    .btn-outline {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px 16px; border-radius: 10px; border: 1.5px solid oklch(30% 0.015 260);
+      background: oklch(20% 0.012 260); color: oklch(94% 0.005 260); font-family: 'Work Sans', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s ease;
+    }
+    .btn-outline:hover { border-color: oklch(70% 0.15 262); color: oklch(70% 0.15 262); }
+    .btn-primary {
+      padding: 10px 16px; border-radius: 10px; border: none;
+      background: oklch(70% 0.15 262); color: oklch(15% 0.01 260); font-family: 'Manrope', sans-serif;
+      font-size: 13px; font-weight: 700; cursor: pointer; transition: background .15s ease;
+    }
+    .btn-primary:hover { background: oklch(76% 0.12 262); }
+    .chevron-btn {
+      width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      border-radius: 8px; border: 1.5px solid oklch(30% 0.015 260); background: oklch(20% 0.012 260);
+      color: oklch(70% 0.02 260); cursor: pointer; transition: all .15s ease; flex-shrink: 0;
+    }
+    .chevron-btn:hover { border-color: oklch(70% 0.15 262); color: oklch(70% 0.15 262); }
+    .status-btn:hover { filter: brightness(1.1); }
+    .cal-cell:hover { box-shadow: 0 0 0 1.5px oklch(70% 0.15 262 / 0.55); }
+    .today-link:hover { text-decoration: underline; }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { opacity: 0.5; filter: invert(1); }
+  </style>
+</helmet>
+
+<div style="min-height:100vh; width:100%; background:oklch(15% 0.01 260); font-family:'Work Sans',sans-serif; padding:40px 24px 64px;">
+  <div style="max-width:880px; margin:0 auto;">
+
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; gap:16px; flex-wrap:wrap;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:40px; height:40px; border-radius:11px; background:linear-gradient(135deg, oklch(70% 0.15 262), oklch(55% 0.14 262)); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <span style="font-family:'Manrope',sans-serif; font-weight:800; font-size:15px; color:oklch(15% 0.01 260);">A</span>
+        </div>
+        <div>
+          <div style="font-family:'Manrope',sans-serif; font-weight:800; font-size:18px; color:oklch(94% 0.005 260); letter-spacing:-.01em;">Attendance</div>
+          <div style="font-family:'Work Sans',sans-serif; font-size:12px; color:oklch(63% 0.015 260);">Personal record</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <span style="font-family:'Work Sans',sans-serif; font-size:13px; color:oklch(63% 0.015 260);">{{perDaySalaryLabel}}</span>
+        <button class="btn-outline" onClick="{{openSalaryModal}}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><circle cx="9" cy="6" r="2" fill="oklch(20% 0.012 260)"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2" fill="oklch(20% 0.012 260)"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="11" cy="18" r="2" fill="oklch(20% 0.012 260)"/></svg>
+          Salary Setup
+        </button>
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin-bottom:24px;">
+      <div style="background:oklch(20% 0.012 260); border:1px solid oklch(27% 0.013 260); border-radius:16px; padding:22px; box-shadow:0 1px 2px oklch(0% 0 0 / 0.3), 0 8px 20px oklch(0% 0 0 / 0.32);">
+        <div style="font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; color:oklch(63% 0.015 260); letter-spacing:.05em; text-transform:uppercase; margin-bottom:10px;">Earned so far</div>
+        <div style="font-family:'Manrope',sans-serif; font-size:28px; font-weight:800; color:oklch(94% 0.005 260); letter-spacing:-.01em; margin-bottom:6px;">{{earnedSoFarLabel}}</div>
+        <div style="font-family:'Work Sans',sans-serif; font-size:12px; color:oklch(63% 0.015 260);">{{earnedSubtext}}</div>
+      </div>
+      <div style="background:oklch(20% 0.012 260); border:1px solid oklch(27% 0.013 260); border-radius:16px; padding:22px; box-shadow:0 1px 2px oklch(0% 0 0 / 0.3), 0 8px 20px oklch(0% 0 0 / 0.32);">
+        <div style="font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; color:oklch(63% 0.015 260); letter-spacing:.05em; text-transform:uppercase; margin-bottom:10px;">Advance taken</div>
+        <div style="font-family:'Manrope',sans-serif; font-size:28px; font-weight:800; color:oklch(72% 0.17 22); letter-spacing:-.01em; margin-bottom:6px;">{{advanceTotalLabel}}</div>
+        <div style="font-family:'Work Sans',sans-serif; font-size:12px; color:oklch(63% 0.015 260);">{{advanceSubtext}}</div>
+      </div>
+      <div style="background:oklch(27% 0.05 262); border:1px solid oklch(40% 0.09 262); border-radius:16px; padding:22px; box-shadow:0 1px 2px oklch(0% 0 0 / 0.3), 0 8px 20px oklch(0% 0 0 / 0.32);">
+        <div style="font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; color:oklch(74% 0.09 262); letter-spacing:.05em; text-transform:uppercase; margin-bottom:10px;">Net payable</div>
+        <div style="font-family:'Manrope',sans-serif; font-size:30px; font-weight:800; color:oklch(82% 0.11 262); letter-spacing:-.01em; margin-bottom:6px;">{{netPayableLabel}}</div>
+        <div style="font-family:'Work Sans',sans-serif; font-size:12px; color:oklch(68% 0.075 262);">This month, after advances</div>
+      </div>
+    </div>
+
+    <div style="background:oklch(20% 0.012 260); border:1px solid oklch(27% 0.013 260); border-radius:20px; padding:24px; box-shadow:0 1px 2px oklch(0% 0 0 / 0.3), 0 8px 24px oklch(0% 0 0 / 0.34);">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="chevron-btn" onClick="{{prevMonth}}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </span>
+          <div style="font-family:'Manrope',sans-serif; font-size:17px; font-weight:700; color:oklch(94% 0.005 260); min-width:150px; text-align:center;">{{monthYearLabel}}</div>
+          <span class="chevron-btn" onClick="{{nextMonth}}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </span>
+        </div>
+        <span class="today-link" onClick="{{goToday}}" style="font-family:'Work Sans',sans-serif; font-size:12.5px; font-weight:600; color:oklch(70% 0.15 262); cursor:pointer;">Today</span>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; margin-bottom:8px;">
+        <div style="text-align:center; font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; color:oklch(63% 0.015 260); letter-spacing:.04em; text-transform:uppercase;">Sun</div>
+        <div style="text-align:center; font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; color:oklch(63% 0.015 260); letter-spacing:.04em; text-transform:uppercase;">Mon</div>
+        <div style="text-align:center; font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; color:oklch(63% 0.015 260); letter-spacing:.04em; text-transform:uppercase;">Tue</div>
+        <div style="text-align:center; font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; color:oklch(63% 0.015 260); letter-spacing:.04em; text-transform:uppercase;">Wed</div>
+        <div style="text-align:center; font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; color:oklch(63% 0.015 260); letter-spacing:.04em; text-transform:uppercase;">Thu</div>
+        <div style="text-align:center; font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; color:oklch(63% 0.015 260); letter-spacing:.04em; text-transform:uppercase;">Fri</div>
+        <div style="text-align:center; font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; color:oklch(63% 0.015 260); letter-spacing:.04em; text-transform:uppercase;">Sat</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px;">
+        <sc-for list="{{cells}}" as="cell" hint-placeholder-count="42">
+          <div class="{{cell.className}}" style="{{cell.cellStyle}}" onClick="{{cell.onClick}}">
+            <sc-if value="{{cell.hasAdvance}}" hint-placeholder-val="{{false}}">
+              <span style="{{cell.advanceBadgeStyle}}">₹</span>
+            </sc-if>
+            <span style="{{cell.dayLabelStyle}}">{{cell.dayLabel}}</span>
+            <sc-if value="{{cell.hasStatus}}" hint-placeholder-val="{{false}}">
+              <span style="{{cell.statusDotStyle}}"></span>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:20px; margin-top:18px; padding-top:16px; border-top:1px solid oklch(27% 0.013 260); flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="width:8px; height:8px; border-radius:999px; background:oklch(72% 0.16 152); display:inline-block;"></span>
+          <span style="font-family:'Work Sans',sans-serif; font-size:12px; color:oklch(63% 0.015 260);">Present</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="width:8px; height:8px; border-radius:999px; background:oklch(78% 0.15 80); display:inline-block;"></span>
+          <span style="font-family:'Work Sans',sans-serif; font-size:12px; color:oklch(63% 0.015 260);">Half-day</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="width:8px; height:8px; border-radius:999px; background:oklch(72% 0.17 22); display:inline-block;"></span>
+          <span style="font-family:'Work Sans',sans-serif; font-size:12px; color:oklch(63% 0.015 260);">Leave</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; margin-left:auto;">
+          <span style="width:14px; height:14px; border-radius:999px; background:oklch(70% 0.15 262); color:oklch(15% 0.01 260); font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; line-height:1;">₹</span>
+          <span style="font-family:'Work Sans',sans-serif; font-size:12px; color:oklch(63% 0.015 260);">Advance taken</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <sc-if value="{{dateModalOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position:fixed; inset:0; background:oklch(5% 0 0 / 0.65); display:flex; align-items:center; justify-content:center; z-index:50; padding:20px;">
+      <div style="width:320px; max-width:100%; background:oklch(20% 0.012 260); border-radius:20px; padding:24px; box-shadow:0 20px 60px oklch(0% 0 0 / 0.55); border:1px solid oklch(30% 0.015 260);">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px;">
+          <div style="font-family:'Manrope',sans-serif; font-weight:700; font-size:15px; color:oklch(94% 0.005 260);">{{modalTitle}}</div>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <sc-if value="{{showClearBtn}}" hint-placeholder-val="{{false}}">
+              <span onClick="{{clearEntry}}" style="font-family:'Work Sans',sans-serif; font-size:12px; color:oklch(72% 0.17 22); cursor:pointer; font-weight:600;">Clear</span>
+            </sc-if>
+            <span onClick="{{closeDateModal}}" style="cursor:pointer; color:oklch(63% 0.015 260); display:flex;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-bottom:18px;">
+          <div class="status-btn" style="{{presentBtnStyle}}" onClick="{{selectPresent}}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{presentIconColor}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+            <span style="{{presentLabelStyle}}">Present</span>
+          </div>
+          <div class="status-btn" style="{{halfBtnStyle}}" onClick="{{selectHalf}}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="{{halfIconColor}}" stroke="{{halfIconColor}}" stroke-width="1.5"><path d="M12 3a9 9 0 000 18V3z"/><circle cx="12" cy="12" r="8.25" fill="none"/></svg>
+            <span style="{{halfLabelStyle}}">Half-Day</span>
+          </div>
+          <div class="status-btn" style="{{leaveBtnStyle}}" onClick="{{selectLeave}}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{leaveIconColor}}" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.5 9.5l5 5M14.5 9.5l-5 5"/></svg>
+            <span style="{{leaveLabelStyle}}">Leave</span>
+          </div>
+        </div>
+
+        <label style="display:flex; align-items:center; gap:9px; cursor:pointer; margin-bottom:2px;">
+          <input type="checkbox" checked="{{draftAdvanceOn}}" onChange="{{toggleAdvance}}" style="width:16px; height:16px; accent-color:oklch(70% 0.15 262); cursor:pointer;" />
+          <span style="font-family:'Work Sans',sans-serif; font-size:13px; color:oklch(94% 0.005 260); font-weight:500;">Advance Salary</span>
+        </label>
+
+        <sc-if value="{{draftAdvanceOn}}" hint-placeholder-val="{{false}}">
+          <div style="display:flex; align-items:center; margin-top:10px; border:1.5px solid oklch(30% 0.015 260); border-radius:10px; overflow:hidden;">
+            <span style="padding:10px 12px; background:oklch(25% 0.013 260); font-family:'Manrope',sans-serif; font-weight:700; color:oklch(63% 0.015 260); font-size:14px;">₹</span>
+            <input type="number" min="0" placeholder="0" value="{{draftAdvanceAmt}}" onChange="{{setAdvanceAmt}}" style="flex:1; width:100%; border:none; outline:none; padding:10px 12px; font-family:'Manrope',sans-serif; font-size:14px; font-weight:600; color:oklch(94% 0.005 260); background:oklch(20% 0.012 260);" />
+          </div>
+        </sc-if>
+
+        <button onClick="{{saveEntry}}" disabled="{{doneDisabled}}" style="{{doneBtnStyle}}">Done</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{salaryOpen}}" hint-placeholder-val="{{false}}">
+    <div style="position:fixed; inset:0; background:oklch(5% 0 0 / 0.65); display:flex; align-items:center; justify-content:center; z-index:50; padding:20px;">
+      <div style="width:300px; max-width:100%; background:oklch(20% 0.012 260); border-radius:20px; padding:24px; box-shadow:0 20px 60px oklch(0% 0 0 / 0.55); border:1px solid oklch(30% 0.015 260);">
+        <div style="font-family:'Manrope',sans-serif; font-weight:700; font-size:16px; color:oklch(94% 0.005 260); margin-bottom:4px;">Salary Setup</div>
+        <div style="font-family:'Work Sans',sans-serif; font-size:12px; color:oklch(63% 0.015 260); margin-bottom:16px; line-height:1.5;">Set your per-day salary. Everything else is calculated automatically.</div>
+        <div style="font-family:'Work Sans',sans-serif; font-size:11px; font-weight:700; color:oklch(63% 0.015 260); letter-spacing:.04em; text-transform:uppercase; margin-bottom:6px;">Per Day Salary</div>
+        <div style="display:flex; align-items:center; border:1.5px solid oklch(30% 0.015 260); border-radius:10px; overflow:hidden; margin-bottom:20px;">
+          <span style="padding:11px 12px; background:oklch(25% 0.013 260); font-family:'Manrope',sans-serif; font-weight:700; color:oklch(63% 0.015 260); font-size:15px;">₹</span>
+          <input type="number" min="0" value="{{salaryDraft}}" onChange="{{setSalaryDraft}}" style="flex:1; width:100%; border:none; outline:none; padding:11px 12px; font-family:'Manrope',sans-serif; font-size:15px; font-weight:700; color:oklch(94% 0.005 260); background:oklch(20% 0.012 260);" />
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-outline" onClick="{{closeSalaryModal}}" style="flex:1;">Cancel</button>
+          <button class="btn-primary" onClick="{{saveSalary}}" style="flex:1;">Save</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{}'>
+const BORDER_COLOR = 'oklch(30% 0.015 260)';
+const TEXT = 'oklch(94% 0.005 260)';
+const TEXT_MUTED = 'oklch(63% 0.015 260)';
+const ACCENT = 'oklch(70% 0.15 262)';
+const CELL_BG = 'oklch(23% 0.013 260)';
+const STATUS_PRESENT = 'oklch(72% 0.16 152)';
+const STATUS_PRESENT_SOFT = 'oklch(27% 0.05 152)';
+const STATUS_HALF = 'oklch(78% 0.15 80)';
+const STATUS_HALF_SOFT = 'oklch(29% 0.055 80)';
+const STATUS_LEAVE = 'oklch(72% 0.17 22)';
+const STATUS_LEAVE_SOFT = 'oklch(28% 0.055 22)';
+const NOOP = () => {};
+
+class Component extends DCLogic {
+  state = {
+    year: 2026,
+    month: 8,
+    perDaySalary: 800,
+    entries: {},
+    openDate: null,
+    draftStatus: null,
+    draftAdvanceOn: false,
+    draftAdvanceAmt: '',
+    salaryOpen: false,
+    salaryDraft: '800',
+  };
+  todayKey = '2026-8-4';
+
+  fmtINR = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+
+  prevMonth = () => {
+    let { month, year } = this.state;
+    month -= 1;
+    if (month < 0) { month = 11; year -= 1; }
+    this.setState({ month, year });
+  };
+  nextMonth = () => {
+    let { month, year } = this.state;
+    month += 1;
+    if (month > 11) { month = 0; year += 1; }
+    this.setState({ month, year });
+  };
+  goToday = () => {
+    this.setState({ year: 2026, month: 8 });
+  };
+
+  openDay = (dateKey) => {
+    const existing = this.state.entries[dateKey];
+    this.setState({
+      openDate: dateKey,
+      draftStatus: existing ? existing.status : null,
+      draftAdvanceOn: existing ? !!existing.advanceOn : false,
+      draftAdvanceAmt: existing && existing.advanceOn ? String(existing.advance) : '',
+    });
+  };
+  closeDateModal = () => { this.setState({ openDate: null }); };
+
+  selectStatus = (s) => { this.setState({ draftStatus: s }); };
+  toggleAdvance = () => { this.setState({ draftAdvanceOn: !this.state.draftAdvanceOn }); };
+  setAdvanceAmt = (e) => { this.setState({ draftAdvanceAmt: e.target.value }); };
+
+  saveEntry = () => {
+    const { openDate, draftStatus, draftAdvanceOn, draftAdvanceAmt } = this.state;
+    if (!openDate || !draftStatus) return;
+    const entries = { ...this.state.entries };
+    entries[openDate] = {
+      status: draftStatus,
+      advanceOn: draftAdvanceOn,
+      advance: draftAdvanceOn ? (Number(draftAdvanceAmt) || 0) : 0,
+    };
+    this.setState({ entries, openDate: null });
+  };
+  clearEntry = () => {
+    const entries = { ...this.state.entries };
+    delete entries[this.state.openDate];
+    this.setState({ entries, openDate: null });
+  };
+
+  openSalaryModal = () => { this.setState({ salaryOpen: true, salaryDraft: String(this.state.perDaySalary) }); };
+  closeSalaryModal = () => { this.setState({ salaryOpen: false }); };
+  setSalaryDraft = (e) => { this.setState({ salaryDraft: e.target.value }); };
+  saveSalary = () => {
+    const v = Number(this.state.salaryDraft) || 0;
+    this.setState({ perDaySalary: v, salaryOpen: false });
+  };
+
+  buildCell(i, day, inMonth, dateKey, isToday, entry, clickable) {
+    const status = entry ? entry.status : null;
+    const hasAdvance = !!(entry && entry.advanceOn);
+    let bg = CELL_BG;
+    let dotColor = 'transparent';
+    if (status === 'present') { bg = STATUS_PRESENT_SOFT; dotColor = STATUS_PRESENT; }
+    else if (status === 'half') { bg = STATUS_HALF_SOFT; dotColor = STATUS_HALF; }
+    else if (status === 'leave') { bg = STATUS_LEAVE_SOFT; dotColor = STATUS_LEAVE; }
+    if (!inMonth) bg = CELL_BG;
+    const ring = isToday ? ('0 0 0 2px ' + ACCENT) : 'none';
+    const cellStyle = 'position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; height:60px; border-radius:12px; background:' + bg + '; border:1px solid ' + (inMonth ? BORDER_COLOR : 'transparent') + '; box-shadow:' + ring + '; cursor:' + (clickable ? 'pointer' : 'default') + '; opacity:' + (inMonth ? 1 : 0.3) + '; transition: box-shadow .15s ease;';
+    const dayLabelStyle = "font-family:'Manrope',sans-serif; font-size:14px; font-weight:" + (inMonth ? 600 : 500) + '; color:' + (inMonth ? TEXT : TEXT_MUTED) + ';';
+    const statusDotStyle = 'width:6px; height:6px; border-radius:999px; background:' + dotColor + ';';
+    const advanceBadgeStyle = 'position:absolute; top:4px; right:4px; width:14px; height:14px; border-radius:999px; background:' + ACCENT + '; color:oklch(15% 0.01 260); font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center; line-height:1;';
+    return {
+      key: dateKey || ('pad-' + i),
+      dayLabel: String(day),
+      dayLabelStyle,
+      cellStyle,
+      className: inMonth ? 'cal-cell' : '',
+      hasStatus: !!status,
+      statusDotStyle,
+      hasAdvance,
+      advanceBadgeStyle,
+      onClick: clickable ? (() => this.openDay(dateKey)) : NOOP,
+    };
+  }
+
+  computeCells(year, month, entries, todayKey) {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstWeekday = new Date(year, month, 1).getDay();
+    const prevMonthDays = new Date(year, month, 0).getDate();
+    const cells = [];
+    for (let i = 0; i < 42; i++) {
+      const dayNum = i - firstWeekday + 1;
+      if (dayNum < 1) {
+        cells.push(this.buildCell(i, prevMonthDays + dayNum, false, null, false, null, false));
+      } else if (dayNum > daysInMonth) {
+        cells.push(this.buildCell(i, dayNum - daysInMonth, false, null, false, null, false));
+      } else {
+        const key = year + '-' + month + '-' + dayNum;
+        cells.push(this.buildCell(i, dayNum, true, key, key === todayKey, entries[key], true));
+      }
+    }
+    return cells;
+  }
+
+  renderVals() {
+    const { year, month, perDaySalary, entries, openDate, draftStatus, draftAdvanceOn, draftAdvanceAmt, salaryOpen, salaryDraft } = this.state;
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const weekdayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const monthNamesShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const monthYearLabel = monthNames[month] + ' ' + year;
+
+    const prefix = year + '-' + month + '-';
+    let present = 0, half = 0, leave = 0, advanceTotal = 0;
+    Object.keys(entries).forEach((k) => {
+      if (k.indexOf(prefix) === 0) {
+        const e = entries[k];
+        if (e.status === 'present') present++;
+        else if (e.status === 'half') half++;
+        else if (e.status === 'leave') leave++;
+        if (e.advanceOn) advanceTotal += e.advance;
+      }
+    });
+    const earned = present * perDaySalary + half * (perDaySalary / 2);
+    const net = earned - advanceTotal;
+
+    const cells = this.computeCells(year, month, entries, this.todayKey);
+
+    const dateModalOpen = !!openDate;
+    let modalTitle = '';
+    if (openDate) {
+      const parts = openDate.split('-').map(Number);
+      const wd = new Date(parts[0], parts[1], parts[2]).getDay();
+      modalTitle = weekdayNames[wd] + ', ' + monthNamesShort[parts[1]] + ' ' + parts[2];
+    }
+    const showClearBtn = !!(openDate && entries[openDate]);
+
+    const btnBase = 'flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:14px 8px; border-radius:12px; cursor:pointer; border:1.5px solid ' + BORDER_COLOR + '; background:' + CELL_BG + '; transition: all .15s ease;';
+    const selBtn = (color, soft) => 'flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:14px 8px; border-radius:12px; cursor:pointer; border:1.5px solid ' + color + '; background:' + soft + '; transition: all .15s ease;';
+    const presentBtnStyle = draftStatus === 'present' ? selBtn(STATUS_PRESENT, STATUS_PRESENT_SOFT) : btnBase;
+    const halfBtnStyle = draftStatus === 'half' ? selBtn(STATUS_HALF, STATUS_HALF_SOFT) : btnBase;
+    const leaveBtnStyle = draftStatus === 'leave' ? selBtn(STATUS_LEAVE, STATUS_LEAVE_SOFT) : btnBase;
+    const presentIconColor = draftStatus === 'present' ? STATUS_PRESENT : TEXT_MUTED;
+    const halfIconColor = draftStatus === 'half' ? STATUS_HALF : TEXT_MUTED;
+    const leaveIconColor = draftStatus === 'leave' ? STATUS_LEAVE : TEXT_MUTED;
+    const lblStyle = (color) => "font-family:'Work Sans',sans-serif; font-size:11px; font-weight:600; color:" + color + ';';
+
+    const doneDisabled = !draftStatus;
+    const doneBtnStyle = 'width:100%; margin-top:18px; padding:13px; border-radius:10px; border:none; font-family:\'Manrope\',sans-serif; font-weight:700; font-size:14px; cursor:' + (doneDisabled ? 'not-allowed' : 'pointer') + '; background:' + (doneDisabled ? 'oklch(28% 0.008 260)' : ACCENT) + '; color:' + (doneDisabled ? 'oklch(50% 0.012 260)' : 'oklch(15% 0.01 260)') + '; transition: background .15s ease;';
+
+    return {
+      perDaySalaryLabel: this.fmtINR(perDaySalary) + ' / day',
+      earnedSoFarLabel: this.fmtINR(earned),
+      earnedSubtext: present + ' present · ' + half + ' half-day' + (half === 1 ? '' : 's'),
+      advanceTotalLabel: this.fmtINR(advanceTotal),
+      advanceSubtext: advanceTotal > 0 ? 'Deducted from this month' : 'No advances taken',
+      netPayableLabel: this.fmtINR(net),
+      monthYearLabel,
+      prevMonth: this.prevMonth,
+      nextMonth: this.nextMonth,
+      goToday: this.goToday,
+      cells,
+      dateModalOpen,
+      modalTitle,
+      showClearBtn,
+      presentBtnStyle,
+      halfBtnStyle,
+      leaveBtnStyle,
+      presentIconColor,
+      halfIconColor,
+      leaveIconColor,
+      presentLabelStyle: lblStyle(presentIconColor),
+      halfLabelStyle: lblStyle(halfIconColor),
+      leaveLabelStyle: lblStyle(leaveIconColor),
+      selectPresent: () => this.selectStatus('present'),
+      selectHalf: () => this.selectStatus('half'),
+      selectLeave: () => this.selectStatus('leave'),
+      closeDateModal: this.closeDateModal,
+      clearEntry: this.clearEntry,
+      draftAdvanceOn,
+      toggleAdvance: this.toggleAdvance,
+      draftAdvanceAmt,
+      setAdvanceAmt: this.setAdvanceAmt,
+      doneDisabled,
+      doneBtnStyle,
+      saveEntry: this.saveEntry,
+      salaryOpen,
+      salaryDraft,
+      setSalaryDraft: this.setSalaryDraft,
+      saveSalary: this.saveSalary,
+      closeSalaryModal: this.closeSalaryModal,
+      openSalaryModal: this.openSalaryModal,
+    };
+  }
+}
+</script>
+</body>
+</html>
