@@ -6,7 +6,7 @@ None actively in progress.
 
 ## Next
 
-The owner locked the full Phase 0–18 roadmap on 2026-09-04 (see `PHASES.md`). [Phase 1] "Local PostgreSQL Setup" is complete (2026-09-04) — see Completed below. [Phase 2] "Temporary Backend Test Page" is next in line but **not started** — do not begin it or scaffold anything until the owner gives the go-ahead, consistent with this project's established pattern.
+The owner locked the full Phase 0–18 roadmap on 2026-09-04 (see `PHASES.md`). [Phase 1] "Local PostgreSQL Setup" and [Phase 2] "Temporary Backend Test Page" are both complete (2026-09-04) — see Completed below. [Phase 3] "Login/Signup Backend" is next in line but **not started** — do not begin it until the owner gives the go-ahead, consistent with this project's established pattern.
 
 Note 2026-09-04: a first attempt to jump straight into scaffolding the Next.js project (before Phase 1's database setup) was interrupted and reverted by the owner — "we are not going to start coding yet." The owner then scoped Phase 1 down to local database setup only, separately confirmed not to start executing it yet, and then locked the full downstream roadmap (Phases 2–18) in one message.
 
@@ -29,3 +29,4 @@ None.
 - [x] Split Phase 1 to local PostgreSQL setup only, and decide its install method (native Windows, via `winget`) — 2026-09-04
 - [x] Lock the full downstream roadmap, Phase 2 through Phase 18 — see `PHASES.md` — 2026-09-04
 - [x] [Phase 1] Local PostgreSQL Setup: found a pre-existing local PostgreSQL 18 service already running (not the planned fresh v17 install), created the `trackme_dev` database on it, and verified connectivity to both the server and the new database via `psql` — 2026-09-04. See `DECISIONS.md`'s "Reused pre-existing local PostgreSQL 18" entry.
+- [x] [Phase 2] Temporary Backend Test Page: scaffolded the production Next.js/TypeScript project at repo root (App Router, ESLint, no database wiring yet) and added one bare test page; verified `npm install`, `npm run build`, `npm run lint`, and the dev server all work — 2026-09-04. See `ARCHITECTURE.md`'s "Production App (Phase 2 scaffold)" section.
