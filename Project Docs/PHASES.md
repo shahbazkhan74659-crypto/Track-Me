@@ -54,12 +54,18 @@ Scaffolded the production Next.js/TypeScript project for the first time (`packag
 
 **Status: Complete.** Verified 2026-09-04: dependency install, production build, lint, and a dev-server request all succeeded. See `ARCHITECTURE.md` for the resulting project structure.
 
-## Phase 3 — Login/Signup Backend
+## Phase 3 — Login Backend (no signup)
 
 ### Objective
-Build the backend for login/signup.
+Build the backend for logging in to a single, owner-provisioned account. Originally scoped as "Login/Signup Backend"; the owner narrowed this to login-only on 2026-09-04 — see `DECISIONS.md`.
 
-**Status: Not started.**
+### Scope
+Wired up Postgres for the first time (a dedicated, least-privilege `trackme_app` role — Phase 1 had only verified the `postgres` superuser), added a `users`/`sessions` schema (`db/schema.sql`), and built three API routes (`/api/auth/login`, `/api/auth/logout`, `/api/auth/session`) backed by a DB-backed session table and bcrypt-hashed passwords. There is no signup route — the single account is created/reset via a manual script (`scripts/seed-user.mjs`), run once by the owner. Extended the Phase 2 test page with a login form to exercise the new endpoints.
+
+### Completion Criteria
+Schema applies cleanly; the seed script creates the account; login/logout/session all work end-to-end (correct login sets a session, wrong credentials are rejected with a generic error, logout clears both the cookie and the DB row); `npm run build`/`npm run lint` pass clean.
+
+**Status: Complete.** Verified 2026-09-04 end-to-end against the running dev server and `trackme_dev` database.
 
 ## Phase 4 — Salary Setup Modal Backend
 

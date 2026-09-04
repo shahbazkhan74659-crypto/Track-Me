@@ -20,8 +20,17 @@ The seeded file has been published as a Claude Artifact (Design canvas) at `http
 - **Structure**: `app/layout.tsx` (minimal root HTML/body shell) and `app/page.tsx` (the Phase 2 temporary backend test page — plain white background, no styling system, to be removed per Phase 8). No other routes, components, or API routes exist yet.
 - **Tooling**: ESLint 9 via `eslint-config-next`'s native flat config (`eslint.config.mjs` imports it directly — no `FlatCompat` shim needed on this version).
 - **TypeScript version note**: pinned to `5.9.3` rather than the newest published `7.0.x` (TypeScript's new native/Go-based rewrite) because `typescript-eslint` — a dependency of `eslint-config-next` — does not yet support TS 7. Revisit this pin once `typescript-eslint` adds support.
-- **No database wiring yet**: no `pg` client, no `.env`, no connection to the `trackme_dev` database created in Phase 1. That begins in Phases 3–7 as each backend engine is built.
 - **Not yet run**: `npm run dev` / `npm run build` / `npm run lint` all verified working during Phase 2, but the app has not been deployed anywhere.
+
+## Login Backend (Phase 3 scaffold)
+
+- **Database access**: `lib/db.ts` exports a singleton `pg.Pool` (cached on `global` in dev to survive hot reload) reading `DATABASE_URL` from `.env.local` (gitignored; `.env.example` documents the shape). The connection uses a dedicated, least-privilege Postgres role `trackme_app` — not the `postgres` superuser — created during Phase 3, scoped to `CONNECT` on `trackme_dev` and CRUD on just the `users`/`sessions` tables. See `DECISIONS.md`.
+- **Schema** (`db/schema.sql`, applied by hand via `psql`, no ORM/migration tool): `users (id, username unique, password_hash, created_at)` and `sessions (id text primary key — the opaque session token itself, user_id fk, created_at, expires_at)`.
+- **Auth logic** (`lib/auth.ts`): `createSession`/`getSessionUser`/`deleteSession`, a 32-byte random hex token as the session id, 30-day expiry, cookie name `trackme_session` (httpOnly, `sameSite: lax`, `secure` in production).
+- **API routes**: `app/api/auth/login/route.ts` (POST — bcrypt-verifies against `users`, generic "invalid username or password" error regardless of which part was wrong, sets the session cookie on success), `app/api/auth/logout/route.ts` (POST — deletes the session row, clears the cookie), `app/api/auth/session/route.ts` (GET — reports `{ authenticated, username? }` from the current cookie).
+- **No signup route exists.** The single account is created/reset via `scripts/seed-user.mjs` (`node scripts/seed-user.mjs <username> <password>`), run manually by the owner — not part of the running app. See `DECISIONS.md`'s "Phase 3 narrowed to login-only" entry.
+- **Test harness**: `app/page.tsx` (the Phase 2 temporary page) now includes a plain login form exercising all three auth routes and showing live session status — this is the intended use of that page per its own Phase 2 objective.
+- **Not yet built**: no route protection/middleware guarding other pages or API routes (nothing exists yet to protect — Phases 4–7 will need to check `getSessionUser` themselves or a shared middleware will be added when they land), no rate limiting on login attempts, no password reset.
 
 ## Technology Stack (prototype only)
 

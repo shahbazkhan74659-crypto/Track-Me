@@ -80,6 +80,24 @@ These decisions were made during initial prototyping. They are recorded here as 
 - Reasoning: Owner's explicit choice between the two offered options.
 - Consequences: Phase 1 will run PostgreSQL as a native Windows service rather than a container — no Docker dependency for local dev going forward. The actual install has **not been run yet** — the owner has explicitly said not to start Phase 1 execution yet; this decision only fixes the method for whenever Phase 1 does begin. See `TASKS.md`/`PHASES.md`.
 
+## Decision: Phase 3 narrowed to login-only — no signup
+
+- Status: Accepted
+- Date: 2026-09-04
+- Context: `PHASES.md`'s locked roadmap named Phase 3 "Login/Signup Backend." The owner clarified the app is being lent to one other person without giving them ownership of the app — they need to be able to log in, but not to create their own account.
+- Decision: Phase 3 builds login only. There is exactly one account, created directly by the owner via a manual provisioning script (`scripts/seed-user.mjs`), not a signup form or route. No signup endpoint exists.
+- Reasoning: Owner's explicit choice, driven by the ownership/lending model described above — a signup flow would let the borrower (or anyone reaching the deployed URL) create their own account, which contradicts "not giving him ownership of app."
+- Consequences: `PHASES.md`'s Phase 3 objective reworded from "Login/Signup Backend" to "Login Backend (no signup)." `PROJECT.md`'s Non-Goals gained an explicit "no self-service signup" entry. If the owner ever wants a second account or a signup flow, that would be a new decision, not an extension of Phase 3.
+
+## Decision: DB-backed sessions and a dedicated least-privilege Postgres role for Phase 3
+
+- Status: Accepted
+- Date: 2026-09-04
+- Context: Phase 3 needed a session strategy and its first real database connection (Phase 1 only verified the `postgres` superuser; Phase 2 explicitly deferred all DB wiring). Two session approaches were offered to the owner: an encrypted stateless cookie (e.g. `iron-session`, no sessions table) versus a `sessions` table in Postgres referenced by an opaque cookie token.
+- Decision: Use a `sessions` table (DB-backed), per the owner's choice — not a stateless encrypted cookie. Separately, rather than have the application connect as the `postgres` superuser, created a scoped `trackme_app` role with `CONNECT` on `trackme_dev` only and `SELECT/INSERT/UPDATE/DELETE` on just the `users` and `sessions` tables; the app's `DATABASE_URL` (`.env.local`, gitignored) uses this role, not the superuser.
+- Reasoning: A DB-backed session table allows a session to be force-revoked server-side later (e.g. kick out the borrower) — not possible with a stateless signed cookie without added complexity. The scoped role wasn't explicitly asked for by the owner, but follows standard least-privilege practice at essentially no cost, and this was the first phase to need any DB connection at all, making it the natural point to set up.
+- Consequences: Every future backend phase (4–7) that needs the database should reuse the `trackme_app` role and `lib/db.ts`'s pool, not the `postgres` superuser. Session cleanup for expired-but-undeleted rows isn't implemented (sessions are just filtered by `expires_at > now()` on lookup) — acceptable at this scale, but noted here in case it matters later. See `ARCHITECTURE.md`.
+
 ## Decision: Reused pre-existing local PostgreSQL 18 instead of installing v17 via winget
 
 - Status: Accepted

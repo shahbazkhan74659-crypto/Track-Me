@@ -24,7 +24,8 @@ Give the owner one place to mark each day's attendance status, optionally record
 
 ## Non-Goals
 
-- Not a multi-user or multi-tenant product — it's a personal, single-user tool. (A login/signup backend is now planned, Phase 3 in `PHASES.md`, to gate access since the app is deployed for someone other than the owner — this adds authentication, it does not make the app multi-tenant. See `DECISIONS.md`.)
+- Not a multi-user or multi-tenant product — it's a personal, single-user tool. (A login backend, Phase 3 in `PHASES.md`, gates access since the app is deployed for someone other than the owner — this adds authentication, it does not make the app multi-tenant. See `DECISIONS.md`.)
+- No self-service signup. There is exactly one account, created directly by the owner via a manual provisioning script (`scripts/seed-user.mjs`) — not a signup form. The person borrowing the app logs in with that account; they cannot create their own.
 - Not a payroll/HR system for teams or organizations.
 - Not intended to model complex pay structures (overtime, taxes, deductions beyond a simple advance) unless the owner asks for that later.
 
@@ -45,11 +46,11 @@ The existing prototype (`prototype/Main.dc.html`) implements all of the above as
 
 ## Current Status
 
-Pre-development / prototyping stage. One interactive visual prototype exists and has been reviewed and approved by the client, including a dark-theme revision. No production backend, framework, persistence, or deployment exists yet. See `PHASES.md` and `TASKS.md`.
+Early production build. The approved interactive prototype still exists as a visual/interaction reference. The real Next.js/TypeScript project is now under construction: Phase 2 scaffolded it, and Phase 3 added a working login backend (single owner-provisioned account, DB-backed sessions) wired to the local `trackme_dev` Postgres database. No real frontend, salary/calendar/advance backend engines, or deployment exist yet. See `PHASES.md` and `TASKS.md`.
 
 ## Constraints
 
-Production stack locked 2026-09-04: Next.js (TypeScript), React frontend with AJAX-driven updates, PostgreSQL (local for dev, Neon for production), deployed on Render's free tier with an UptimeRobot keep-alive ping. See `DECISIONS.md`. Must be deployed and reachable in a browser — it's for someone other than the owner to use, not confined to one person's local browser storage. Whether the deployed app needs any access protection (password/PIN) is still open — see `TASKS.md`.
+Production stack locked 2026-09-04: Next.js (TypeScript), React frontend with AJAX-driven updates, PostgreSQL (local for dev, Neon for production), deployed on Render's free tier with an UptimeRobot keep-alive ping. See `DECISIONS.md`. Must be deployed and reachable in a browser — it's for someone other than the owner to use, not confined to one person's local browser storage. Access protection is resolved: Phase 3's login backend gates the app (see above); there is no separate password/PIN layer beyond that login.
 
 ## Scope
 
