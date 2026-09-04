@@ -30,7 +30,14 @@ The seeded file has been published as a Claude Artifact (Design canvas) at `http
 - **API routes**: `app/api/auth/login/route.ts` (POST — bcrypt-verifies against `users`, generic "invalid username or password" error regardless of which part was wrong, sets the session cookie on success), `app/api/auth/logout/route.ts` (POST — deletes the session row, clears the cookie), `app/api/auth/session/route.ts` (GET — reports `{ authenticated, username? }` from the current cookie).
 - **No signup route exists.** The single account is created/reset via `scripts/seed-user.mjs` (`node scripts/seed-user.mjs <username> <password>`), run manually by the owner — not part of the running app. See `DECISIONS.md`'s "Phase 3 narrowed to login-only" entry.
 - **Test harness**: `app/page.tsx` (the Phase 2 temporary page) now includes a plain login form exercising all three auth routes and showing live session status — this is the intended use of that page per its own Phase 2 objective.
-- **Not yet built**: no route protection/middleware guarding other pages or API routes (nothing exists yet to protect — Phases 4–7 will need to check `getSessionUser` themselves or a shared middleware will be added when they land), no rate limiting on login attempts, no password reset.
+- **Not yet built**: no shared middleware guarding routes — each protected route calls `requireAuth` itself (see below) rather than a central middleware layer; no rate limiting on login attempts; no password reset.
+
+## Salary Setup Backend (Phase 4)
+
+- **Schema**: `users.per_day_salary NUMERIC(10,2)`, nullable — `NULL` means the owner hasn't set a rate yet (no assumed default, unlike the prototype's sample ₹800). Added via `db/schema.sql`'s `CREATE TABLE` (fresh installs) and applied to the already-existing `trackme_dev` table with `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`.
+- **Auth helper**: `lib/auth.ts` now exports `requireAuth(request)`, wrapping `getSessionUser` with the session-cookie read — the first reusable route-protection helper (Phases 5–7 should use it rather than re-implementing the cookie lookup).
+- **API routes** (`app/api/salary/route.ts`): `GET` and `PUT`, both `requireAuth`-gated (401 if not logged in). `PUT` validates `perDaySalary` is a finite number `> 0` (400 otherwise) and updates the logged-in user's row.
+- **Test harness**: `app/page.tsx`'s Salary Setup section (visible only when authenticated) exercises both routes — shows the current rate (or "not set"), and a form to save a new one.
 
 ## Technology Stack (prototype only)
 

@@ -72,7 +72,13 @@ Schema applies cleanly; the seed script creates the account; login/logout/sessio
 ### Objective
 Build the backend behind the Salary Setup modal (per-day rate).
 
-**Status: Not started.**
+### Scope
+Added a nullable `per_day_salary` column to `users` (one value per account, no history needed), a `requireAuth` helper in `lib/auth.ts` (the first route-protection code, flagged as a gap after Phase 3), and auth-gated `GET`/`PUT /api/salary` routes — `PUT` validates the rate is a positive finite number. Extended the test page with a Salary Setup section, shown only when logged in.
+
+### Completion Criteria
+Both routes return 401 when logged out; when logged in, `GET` returns `null` until set, `PUT` rejects non-positive/non-numeric values with 400, a valid `PUT` persists and is reflected by a subsequent `GET`; `npm run build`/`npm run lint` pass clean.
+
+**Status: Complete.** Verified 2026-09-04 end-to-end against the running dev server and `trackme_dev` database (including confirming the persisted value directly via `psql`).
 
 ## Phase 5 — Calendar Backend
 

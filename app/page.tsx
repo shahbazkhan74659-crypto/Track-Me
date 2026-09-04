@@ -10,6 +10,10 @@ export default function BackendTestPage() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
 
+  const [perDaySalary, setPerDaySalary] = useState<number | null>(null);
+  const [salaryInput, setSalaryInput] = useState("");
+  const [salaryError, setSalaryError] = useState<string | null>(null);
+
   async function refreshSession() {
     const res = await fetch("/api/auth/session");
     setSession(await res.json());
@@ -28,6 +32,25 @@ export default function BackendTestPage() {
       ignore = true;
     };
   }, []);
+
+  useEffect(() => {
+    let ignore = false;
+
+    (async () => {
+      if (!session?.authenticated) {
+        if (!ignore) setPerDaySalary(null);
+        return;
+      }
+
+      const res = await fetch("/api/salary");
+      const data = await res.json();
+      if (!ignore) setPerDaySalary(data.perDaySalary);
+    })();
+
+    return () => {
+      ignore = true;
+    };
+  }, [session]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -53,6 +76,26 @@ export default function BackendTestPage() {
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
     await refreshSession();
+  }
+
+  async function handleSaveSalary(e: React.FormEvent) {
+    e.preventDefault();
+    setSalaryError(null);
+
+    const res = await fetch("/api/salary", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ perDaySalary: Number(salaryInput) }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      setSalaryError(data.error ?? "Save failed.");
+      return;
+    }
+
+    setPerDaySalary(data.perDaySalary);
+    setSalaryInput("");
   }
 
   return (
@@ -102,6 +145,26 @@ export default function BackendTestPage() {
           {loginError ? <p style={{ color: "#b00020" }}>{loginError}</p> : null}
         </form>
       )}
+
+      {session?.authenticated ? (
+        <>
+          <h2>Salary Setup (Phase 4)</h2>
+          <p>Current per-day rate: {perDaySalary === null ? "not set" : `₹${perDaySalary}`}</p>
+          <form onSubmit={handleSaveSalary}>
+            <label>
+              Per-day salary{" "}
+              <input
+                type="number"
+                step="0.01"
+                value={salaryInput}
+                onChange={(e) => setSalaryInput(e.target.value)}
+              />
+            </label>
+            <button type="submit">Save</button>
+            {salaryError ? <p style={{ color: "#b00020" }}>{salaryError}</p> : null}
+          </form>
+        </>
+      ) : null}
     </main>
   );
 }

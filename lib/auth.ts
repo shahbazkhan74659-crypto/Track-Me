@@ -1,4 +1,5 @@
 import { randomBytes } from "crypto";
+import { NextRequest } from "next/server";
 import { pool } from "@/lib/db";
 
 export const SESSION_COOKIE_NAME = "trackme_session";
@@ -34,4 +35,11 @@ export async function getSessionUser(token: string | undefined): Promise<{ id: n
 export async function deleteSession(token: string | undefined): Promise<void> {
   if (!token) return;
   await pool.query("DELETE FROM sessions WHERE id = $1", [token]);
+}
+
+export async function requireAuth(
+  request: NextRequest,
+): Promise<{ id: number; username: string } | null> {
+  const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+  return getSessionUser(token);
 }
