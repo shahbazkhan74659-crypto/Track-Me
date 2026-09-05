@@ -11,7 +11,7 @@ const fieldLabelStyle = {
   color: colors.textMuted,
   letterSpacing: ".04em",
   textTransform: "uppercase" as const,
-  marginBottom: 6,
+  marginBottom: 5,
 };
 
 const inputStyle = {
@@ -19,7 +19,7 @@ const inputStyle = {
   border: `1.5px solid ${colors.border}`,
   borderRadius: 10,
   outline: "none",
-  padding: "11px 12px",
+  padding: "9px 12px",
   fontFamily: "var(--font-work-sans), sans-serif",
   fontSize: 14,
   color: colors.text,
@@ -59,27 +59,28 @@ export default function LoginGate() {
       onSubmit={submit}
       autoComplete="off"
       style={{
-        width: 320,
+        width: 280,
         maxWidth: "100%",
         background: colors.panelBackground,
         border: `1px solid ${colors.panelBorder}`,
-        borderRadius: 20,
-        padding: 28,
+        borderRadius: 18,
+        padding: 20,
         boxShadow: "0 20px 60px oklch(0% 0 0 / 0.55)",
       }}
     >
-      <div style={{ fontFamily: "var(--font-manrope), sans-serif", fontWeight: 800, fontSize: 18, color: colors.text, marginBottom: 4 }}>
-        Attendance
+      <div style={{ fontFamily: "var(--font-manrope), sans-serif", fontWeight: 800, fontSize: 17, color: colors.text, marginBottom: 3 }}>
+        Track Me
       </div>
-      <div style={{ fontFamily: "var(--font-work-sans), sans-serif", fontSize: 13, color: colors.textMuted, marginBottom: 22 }}>
+      <div style={{ fontFamily: "var(--font-work-sans), sans-serif", fontSize: 12.5, color: colors.textMuted, marginBottom: 14 }}>
         Sign in to continue.
       </div>
 
-      <div style={{ marginBottom: 16 }}>
+      <div style={{ marginBottom: 12 }}>
         <div style={fieldLabelStyle}>Username</div>
         <input
           type="text"
           name="trackme-username"
+          aria-label="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           autoComplete="off"
@@ -91,11 +92,12 @@ export default function LoginGate() {
         />
       </div>
 
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: 14 }}>
         <div style={fieldLabelStyle}>Password</div>
         <input
           type="password"
           name="trackme-password"
+          aria-label="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"

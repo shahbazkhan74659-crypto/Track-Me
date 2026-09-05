@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:e2e": "playwright test",
+    "test:ct": "playwright test -c playwright-ct.config.ts"
   },
   "dependencies": {
     "bcryptjs": "^3",
@@ -16,12 +18,14 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "typescript": "5.9.3",
+    "@playwright/experimental-ct-react": "^1.62.1",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^22",
     "@types/pg": "^8",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.4"
+    "eslint-config-next": "16.3.4",
+    "typescript": "5.9.3"
   }
 }

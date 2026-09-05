@@ -72,6 +72,9 @@ export default function SalarySetupControl({ perDaySalary, onSave }: SalarySetup
           }}
         >
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Salary Setup"
             style={{
               width: 300,
               maxWidth: "100%",
@@ -128,6 +131,7 @@ export default function SalarySetupControl({ perDaySalary, onSave }: SalarySetup
               <input
                 type="number"
                 min="0"
+                aria-label="Per day salary"
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 style={{

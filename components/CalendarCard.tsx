@@ -159,6 +159,7 @@ export default function CalendarCard({ view, onViewChange, entries, onSaveEntry,
             <div
               key={i}
               className="calendar-cell"
+              data-testid={cell.isCurrentMonth ? `day-${cell.year}-${cell.month}-${cell.day}` : undefined}
               onClick={cell.isCurrentMonth ? () => setOpenCell(cell) : undefined}
               style={{
                 display: "flex",

@@ -218,7 +218,17 @@ Fixed via one new `@media (max-width: 640px)` block in `app/globals.css`, extend
 ### Objective
 Test the fully wired app end to end and make it production-ready for deployment on Render's free tier.
 
-**Status: Not started.**
+### Scope
+Started with the testing half. Introduced Playwright as the project's first real test framework (anticipated by `DECISIONS.md`'s Phase 8 entry: "If a future phase ... needs richer testing ... introducing a real framework then would be a new decision"), split into two suites:
+
+- **E2E** (`e2e/`, `playwright.config.ts`): drives the real app through a real browser against the actual `npm run dev` server and the real local `trackme_dev` database — auth (login gate, invalid credentials, unauthenticated 401s, logout), Salary Setup validation and persistence, calendar date-entry save/₹0-advance/clear, the earned/advance/net-payable formula against known inputs, and (via a `mobile-chromium` Playwright project emulating a phone) Phase 15's calendar-before-stat-cards mobile reorder and the chevron touch-target bump.
+- **Component tests** (`tests-ct/`, `playwright-ct.config.ts`, `@playwright/experimental-ct-react`): mount `CalendarCard`, `DateEntryModal`, `StatCards`, `SalarySetupControl`, and `ProfileBadge` in isolation with mocked props/callbacks — no server, no database. `AttendanceApp` and `LoginGate` were deliberately excluded from component testing (they use `next/navigation`'s `useRouter`, which needs the real Next.js router context Playwright CT's plain-Vite harness doesn't provide) and are covered by the E2E suite instead, where that context is real.
+
+Before writing tests, asked the owner how authenticated E2E flows should log in and how mutating tests should avoid touching real data — see `DECISIONS.md`'s "Playwright test infrastructure" entry. The owner chose a dedicated test-only account (`e2e-test-user`, seeded via `scripts/seed-user.mjs`, credentials in a gitignored `.env.test.local`) and reusing Phase 8's data-safety instincts, adapted to the fact that this account is disposable rather than the owner's real one.
+
+Along the way, added a handful of accessible-name/testability hooks the components didn't have yet: `aria-label`s on the login/salary/advance-amount inputs, `role="dialog"`/`aria-label` on both modals (needed once the calendar legend's "Present"/"Leave" text turned out to collide with the date-entry modal's identically-labeled status buttons under Playwright's strict-mode text matching), and a `data-testid` on each current-month calendar cell. These are genuine accessibility improvements, not test-only scaffolding — screen readers benefit from the same labels Playwright uses.
+
+**Status: Partially complete (testing done, production-readiness checklist not yet started).** Verified 2026-09-05: all 12 E2E tests and all 19 component tests pass, re-run twice to rule out flakiness (one real test-authoring bug was caught and fixed this way — a `salary.spec.ts` test assumed the Salary Setup modal always opens blank, which broke on the second run once a prior test had already saved a rate for the test account). `npm run lint`/`npm run build` both pass clean (the generated `playwright/.cache/` build artifact had to be added to `eslint.config.mjs`'s ignore list and to `.gitignore`, alongside `playwright-report/`, `test-results/`, and `tests-ct/__snapshots__/`). **Not yet done:** the "production readiness for deployment on Render's free tier" half of this phase's objective — no work has started on that (env var audit, security headers, error-page polish, etc.) — do not treat Phase 16 as fully complete until that's addressed.
 
 ## Phase 17 — Neon PostgreSQL Setup
 

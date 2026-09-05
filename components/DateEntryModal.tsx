@@ -98,6 +98,9 @@ export default function DateEntryModal({ title, existingEntry, onClose, onSave, 
       }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Date entry"
         style={{
           width: 320,
           maxWidth: "100%",
@@ -203,6 +206,7 @@ export default function DateEntryModal({ title, existingEntry, onClose, onSave, 
               type="number"
               min="0"
               placeholder="0"
+              aria-label="Advance amount"
               value={draftAdvanceAmt}
               onChange={(e) => setDraftAdvanceAmt(e.target.value)}
               style={{
