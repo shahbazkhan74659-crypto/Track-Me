@@ -245,7 +245,7 @@ Along the way, added a handful of accessible-name/testability hooks the componen
 ### Objective
 Provision the Neon PostgreSQL production database and store its connection credentials in `.env`.
 
-**Status: Not started.**
+**Status: Complete.** The owner provisioned the Neon project/database and supplied the pooled connection string; verified connectivity, applied `db/schema.sql` (`users`/`sessions`/`entries`), and — following Phase 3's local precedent — created a dedicated least-privilege `trackme_app` role on Neon (CRUD on the three app tables only, verified unable to run DDL) rather than using the Neon owner role for the app itself. `DATABASE_URL` (the scoped role) is stored in a new gitignored `.env.production.local`, which Next.js loads ahead of `.env.local` for `next build`/`next start` — keeping local dev on the local Postgres database and production-mode runs on Neon automatically. See `ARCHITECTURE.md`'s "Neon PostgreSQL Setup (Phase 17)" section and `DECISIONS.md`.
 
 ## Phase 18 — Deployment on Render
 
