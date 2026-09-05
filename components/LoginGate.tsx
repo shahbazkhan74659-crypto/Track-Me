@@ -57,6 +57,7 @@ export default function LoginGate() {
   return (
     <form
       onSubmit={submit}
+      autoComplete="off"
       style={{
         width: 320,
         maxWidth: "100%",
@@ -78,9 +79,13 @@ export default function LoginGate() {
         <div style={fieldLabelStyle}>Username</div>
         <input
           type="text"
+          name="trackme-username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          autoComplete="username"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
           required
           style={inputStyle}
         />
@@ -90,9 +95,10 @@ export default function LoginGate() {
         <div style={fieldLabelStyle}>Password</div>
         <input
           type="password"
+          name="trackme-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
+          autoComplete="new-password"
           required
           style={inputStyle}
         />

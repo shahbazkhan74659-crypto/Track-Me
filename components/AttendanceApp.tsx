@@ -10,7 +10,7 @@ import type { CalendarCell } from "@/lib/calendar";
 import { getTodayIST } from "@/lib/calendar";
 import { colors } from "@/lib/theme";
 
-export default function AttendanceApp() {
+export default function AttendanceApp({ username }: { username: string }) {
   const router = useRouter();
   const [view, setView] = useState<CalendarView>(() => {
     const today = getTodayIST();
@@ -137,7 +137,7 @@ export default function AttendanceApp() {
           flexWrap: "wrap",
         }}
       >
-        <ProfileBadge />
+        <ProfileBadge username={username} />
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <SalarySetupControl perDaySalary={perDaySalary} onSave={handleSaveSalary} />
           <span

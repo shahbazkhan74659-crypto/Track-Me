@@ -36,7 +36,7 @@ export default async function HomePage() {
         padding: "40px 24px 64px",
       }}
     >
-      <AttendanceApp />
+      <AttendanceApp username={user.username} />
     </div>
   );
 }
