@@ -101,6 +101,8 @@ export default function DateEntryModal({ title, existingEntry, onClose, onSave, 
         style={{
           width: 320,
           maxWidth: "100%",
+          maxHeight: "90vh",
+          overflowY: "auto",
           background: colors.panelBackground,
           borderRadius: 20,
           padding: 24,

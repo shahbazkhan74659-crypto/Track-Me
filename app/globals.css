@@ -87,3 +87,89 @@ input[type="number"]::-webkit-outer-spin-button {
 .status-btn:hover {
   filter: brightness(1.1);
 }
+
+.app-shell {
+  padding: 40px 24px 64px;
+}
+
+.stat-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.stat-cards-grid > div {
+  padding: 22px;
+}
+
+.stat-value {
+  font-size: 28px;
+}
+.stat-value.net {
+  font-size: 30px;
+}
+
+.calendar-card {
+  padding: 24px;
+}
+
+.calendar-cell {
+  height: 60px;
+}
+
+.calendar-grid {
+  gap: 8px;
+}
+
+.month-label {
+  min-width: 150px;
+  font-size: 17px;
+}
+
+@media (max-width: 640px) {
+  .chevron-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-shell {
+    padding: 24px 14px 48px;
+  }
+
+  .stat-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    order: 2;
+  }
+  .stat-cards-grid > div {
+    padding: 16px;
+  }
+
+  .stat-value {
+    font-size: 22px;
+  }
+  .stat-value.net {
+    font-size: 24px;
+  }
+
+  .calendar-card {
+    padding: 16px;
+    order: 1;
+  }
+
+  .calendar-cell {
+    height: 56px;
+  }
+
+  .calendar-grid {
+    gap: 6px;
+  }
+
+  .month-label {
+    min-width: 120px;
+    font-size: 15px;
+  }
+
+  .calendar-nav {
+    flex-direction: column;
+  }
+}

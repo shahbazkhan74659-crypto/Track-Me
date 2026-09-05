@@ -28,12 +28,12 @@ export default async function HomePage() {
 
   return (
     <div
+      className="app-shell"
       style={{
         minHeight: "100vh",
         width: "100%",
         background: colors.pageBackground,
         color: colors.text,
-        padding: "40px 24px 64px",
       }}
     >
       <AttendanceApp username={user.username} />

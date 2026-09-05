@@ -78,15 +78,15 @@ export default function CalendarCard({ view, onViewChange, entries, onSaveEntry,
   return (
     <>
     <div
+      className="calendar-card"
       style={{
         background: colors.panelBackground,
         border: `1px solid ${colors.panelBorder}`,
         borderRadius: 20,
-        padding: 24,
         boxShadow: "0 1px 2px oklch(0% 0 0 / 0.3), 0 8px 24px oklch(0% 0 0 / 0.34)",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
+      <div className="calendar-nav" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <button type="button" className="chevron-btn" onClick={prevMonth} aria-label="Previous month">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -94,12 +94,11 @@ export default function CalendarCard({ view, onViewChange, entries, onSaveEntry,
             </svg>
           </button>
           <div
+            className="month-label"
             style={{
               fontFamily: "var(--font-manrope), sans-serif",
-              fontSize: 17,
               fontWeight: 700,
               color: colors.text,
-              minWidth: 150,
               textAlign: "center",
             }}
           >
@@ -120,7 +119,7 @@ export default function CalendarCard({ view, onViewChange, entries, onSaveEntry,
         </span>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7,minmax(0,1fr))", gap: 8, marginBottom: 8 }}>
+      <div className="calendar-grid" style={{ display: "grid", gridTemplateColumns: "repeat(7,minmax(0,1fr))", marginBottom: 8 }}>
         {WEEKDAY_LABELS.map((label) => (
           <div
             key={label}
@@ -139,7 +138,7 @@ export default function CalendarCard({ view, onViewChange, entries, onSaveEntry,
         ))}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7,minmax(0,1fr))", gap: 8 }}>
+      <div className="calendar-grid" style={{ display: "grid", gridTemplateColumns: "repeat(7,minmax(0,1fr))" }}>
         {cells.map((cell, i) => {
           const key = entryKey(cell.year, cell.month, cell.day);
           const entry = cell.isCurrentMonth ? entries[key] : undefined;
@@ -159,15 +158,14 @@ export default function CalendarCard({ view, onViewChange, entries, onSaveEntry,
           return (
             <div
               key={i}
+              className="calendar-cell"
               onClick={cell.isCurrentMonth ? () => setOpenCell(cell) : undefined}
               style={{
-                position: "relative",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: 6,
-                height: 60,
+                gap: 4,
                 borderRadius: 12,
                 background,
                 border: `1px solid ${cell.isCurrentMonth ? colors.border : "transparent"}`,
@@ -179,20 +177,18 @@ export default function CalendarCard({ view, onViewChange, entries, onSaveEntry,
               {entry?.advanceOn && (
                 <span
                   style={{
-                    position: "absolute",
-                    top: 4,
-                    right: 4,
-                    width: 14,
-                    height: 14,
+                    width: 12,
+                    height: 12,
                     borderRadius: 999,
                     background: colors.accent,
                     color: colors.pageBackground,
-                    fontSize: 8,
+                    fontSize: 7,
                     fontWeight: 700,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     lineHeight: 1,
+                    flexShrink: 0,
                   }}
                 >
                   ₹
@@ -202,6 +198,7 @@ export default function CalendarCard({ view, onViewChange, entries, onSaveEntry,
                 style={{
                   fontFamily: "var(--font-manrope), sans-serif",
                   fontSize: 14,
+                  lineHeight: 1,
                   fontWeight: cell.isCurrentMonth ? 600 : 500,
                   color: cell.isCurrentMonth ? colors.text : colors.textMuted,
                 }}

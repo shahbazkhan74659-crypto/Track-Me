@@ -126,19 +126,18 @@ export default function AttendanceApp({ username }: { username: string }) {
   };
 
   return (
-    <div style={{ maxWidth: 880, margin: "0 auto" }}>
+    <div style={{ maxWidth: 880, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24 }}>
       <div
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          marginBottom: 28,
           gap: 16,
           flexWrap: "wrap",
         }}
       >
         <ProfileBadge username={username} />
-        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
           <SalarySetupControl perDaySalary={perDaySalary} onSave={handleSaveSalary} />
           <span
             className="today-link"

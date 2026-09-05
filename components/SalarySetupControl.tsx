@@ -41,7 +41,7 @@ export default function SalarySetupControl({ perDaySalary, onSave }: SalarySetup
 
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
         <span style={{ fontFamily: "var(--font-work-sans), sans-serif", fontSize: 13, color: colors.textMuted }}>
           {perDaySalary === null ? "Not set" : `${formatINR(perDaySalary)} / day`}
         </span>
@@ -75,6 +75,8 @@ export default function SalarySetupControl({ perDaySalary, onSave }: SalarySetup
             style={{
               width: 300,
               maxWidth: "100%",
+              maxHeight: "90vh",
+              overflowY: "auto",
               background: colors.panelBackground,
               borderRadius: 20,
               padding: 24,

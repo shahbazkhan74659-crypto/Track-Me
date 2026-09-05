@@ -42,21 +42,20 @@ export default function StatCards({ summary }: StatCardsProps) {
   const netPayable = summary?.netPayable ?? null;
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 20, marginBottom: 24 }}>
+    <div className="stat-cards-grid">
       <div
         style={{
           background: colors.panelBackground,
           border: `1px solid ${colors.panelBorder}`,
           borderRadius: 16,
-          padding: 22,
           boxShadow: "0 1px 2px oklch(0% 0 0 / 0.3), 0 8px 20px oklch(0% 0 0 / 0.32)",
         }}
       >
         <div style={labelStyle}>Earned so far</div>
         <div
+          className="stat-value"
           style={{
             fontFamily: "var(--font-manrope), sans-serif",
-            fontSize: 28,
             fontWeight: 800,
             color: colors.text,
             letterSpacing: "-.01em",
@@ -77,15 +76,14 @@ export default function StatCards({ summary }: StatCardsProps) {
           background: colors.panelBackground,
           border: `1px solid ${colors.panelBorder}`,
           borderRadius: 16,
-          padding: 22,
           boxShadow: "0 1px 2px oklch(0% 0 0 / 0.3), 0 8px 20px oklch(0% 0 0 / 0.32)",
         }}
       >
         <div style={labelStyle}>Advance taken</div>
         <div
+          className="stat-value"
           style={{
             fontFamily: "var(--font-manrope), sans-serif",
-            fontSize: 28,
             fontWeight: 800,
             color: colors.statusLeave,
             letterSpacing: "-.01em",
@@ -102,15 +100,14 @@ export default function StatCards({ summary }: StatCardsProps) {
           background: colors.netPanelBackground,
           border: `1px solid ${colors.netPanelBorder}`,
           borderRadius: 16,
-          padding: 22,
           boxShadow: "0 1px 2px oklch(0% 0 0 / 0.3), 0 8px 20px oklch(0% 0 0 / 0.32)",
         }}
       >
         <div style={{ ...labelStyle, color: colors.netAccentTextMuted }}>Net payable</div>
         <div
+          className="stat-value net"
           style={{
             fontFamily: "var(--font-manrope), sans-serif",
-            fontSize: 30,
             fontWeight: 800,
             color: colors.netAccentText,
             letterSpacing: "-.01em",
