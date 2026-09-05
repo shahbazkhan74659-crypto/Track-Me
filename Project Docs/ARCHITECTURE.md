@@ -39,6 +39,13 @@ The seeded file has been published as a Claude Artifact (Design canvas) at `http
 - **API routes** (`app/api/salary/route.ts`): `GET` and `PUT`, both `requireAuth`-gated (401 if not logged in). `PUT` validates `perDaySalary` is a finite number `> 0` (400 otherwise) and updates the logged-in user's row.
 - **Test harness**: `app/page.tsx`'s Salary Setup section (visible only when authenticated) exercises both routes — shows the current rate (or "not set"), and a form to save a new one.
 
+## Calendar Backend (Phase 5)
+
+- **`lib/calendar.ts`**: pure, dependency-free calendar utility module, reused by every future phase that touches dates (Phase 6 entries, Phase 7 calculations). Exports `getTodayIST()` (current Asia/Kolkata date via `Intl.DateTimeFormat`, timezone-independent of the server process — see `DECISIONS.md` for why this matters), `normalizeYearMonth(year, month)` (rolls any integer month into 0-11 range with year carry, e.g. for Dec/Jan navigation rollover), `daysInMonth`, `weekdayOfFirst`, `weekdayOf` (all UTC-anchored Gregorian arithmetic, leap-year correct), and `buildMonthGrid(year, month, today?)` (the fixed 6x7/42-cell, Sunday-first grid, including real year/month/day for leading/trailing adjacent-month cells — reproduces the approved prototype's `computeCells` algorithm exactly, but timezone-safely).
+- **API route** (`app/api/calendar/route.ts`): `GET` only, `requireAuth`-gated (401 if not logged in). Optional `year`/`month` query params (0-indexed month, matching the entries-key convention); omitting both defaults to the current Asia/Kolkata month. Returns 400 if only one of `year`/`month` is given, either is non-integer, or `year` is outside `[1900, 2200]`. Response shape: `{ today: {year, month, day, weekday}, requested: {year, month}, cells: CalendarCell[] }` (42 entries).
+- **Test harness**: `app/page.tsx`'s Calendar section (visible only when authenticated) shows the live Asia/Kolkata "today" reading, a year/month input form, and a plain 7-column grid rendering of the 42 returned cells (dimmed for adjacent-month days, bordered for today).
+- **Not yet built**: no persistence — this phase is a pure computation service. The `entries`/attendance table (status, advance amount, keyed by date) is Phase 6, not this phase.
+
 ## Technology Stack (prototype only)
 
 - Claude Design Components format (`.dc.html`): plain HTML, a constrained templating syntax (dotted-path `{{holes}}`, `sc-if`, `sc-for`), and a React-class-like JS logic block (`state`, `setState`, `renderVals()`), executed inside a sandboxed preview iframe by the platform-provided runtime (`support.js`, injected at render time).

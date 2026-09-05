@@ -85,7 +85,13 @@ Both routes return 401 when logged out; when logged in, `GET` returns `null` unt
 ### Objective
 Build the backend behind the calendar.
 
-**Status: Not started.**
+### Scope
+Added `lib/calendar.ts`, a pure, dependency-free calendar utility module: `getTodayIST()` reads the current wall-clock date in Asia/Kolkata via `Intl.DateTimeFormat` (correct regardless of the server process's local timezone — required for correctness on Render, which runs in UTC), while `daysInMonth`, `weekdayOfFirst`, `weekdayOf`, and `buildMonthGrid` do pure Gregorian calendar arithmetic anchored via `Date.UTC(...)`/`getUTC*()` rather than local-time `Date` constructors. `buildMonthGrid` reproduces the approved prototype's 42-cell (6x7), Sunday-first grid algorithm exactly, but timezone-safely, including real year/month/day for leading/trailing adjacent-month cells. Added a `requireAuth`-gated `GET /api/calendar` route (optional `year`/`month` query params, 0-indexed month, defaults to the current IST month) returning `{ today, requested, cells }`. Extended the test page with a Calendar section showing the live IST "today" and a year/month-driven grid. No database schema change — this phase is a pure computation service; the `entries`/attendance table is Phase 6. See `ARCHITECTURE.md`'s "Calendar Backend (Phase 5)" section and `DECISIONS.md`'s Asia/Kolkata entry.
+
+### Completion Criteria
+`GET /api/calendar` returns 401 when logged out; 400 when `year`/`month` are given inconsistently, non-integer, or `year` is out of range; with no params, defaults to the current Asia/Kolkata month; the grid is always 42 cells, Sunday-first, with leap-year-correct day counts and correct adjacent-month rollover at Dec/Jan boundaries; the reported "today" reflects the real Asia/Kolkata date regardless of server timezone (verified by forcing `TZ=UTC` and confirming no change); `npm run build`/`npm run lint` pass clean.
+
+**Status: Complete.** Verified 2026-09-05 against the running dev server: calendar math (leap years, days-per-month, weekday-of-first) checked directly, IST-vs-server-timezone independence confirmed by forcing `TZ=UTC`, and 401 on an unauthenticated request confirmed end-to-end. See `ARCHITECTURE.md`.
 
 ## Phase 6 — Clickable Date Modal Backend
 

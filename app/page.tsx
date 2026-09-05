@@ -14,6 +14,25 @@ export default function BackendTestPage() {
   const [salaryInput, setSalaryInput] = useState("");
   const [salaryError, setSalaryError] = useState<string | null>(null);
 
+  type TodayIST = { year: number; month: number; day: number; weekday: number };
+  type CalendarCell = {
+    year: number;
+    month: number;
+    day: number;
+    weekday: number;
+    isCurrentMonth: boolean;
+    isToday: boolean;
+  };
+
+  const [todayIST, setTodayIST] = useState<TodayIST | null>(null);
+  const [calendarCells, setCalendarCells] = useState<CalendarCell[]>([]);
+  const [calendarRequested, setCalendarRequested] = useState<{ year: number; month: number } | null>(
+    null,
+  );
+  const [yearInput, setYearInput] = useState("");
+  const [monthInput, setMonthInput] = useState("");
+  const [calendarError, setCalendarError] = useState<string | null>(null);
+
   async function refreshSession() {
     const res = await fetch("/api/auth/session");
     setSession(await res.json());
@@ -51,6 +70,47 @@ export default function BackendTestPage() {
       ignore = true;
     };
   }, [session]);
+
+  async function loadCalendar(year?: number, month?: number) {
+    setCalendarError(null);
+    const qs = year !== undefined && month !== undefined ? `?year=${year}&month=${month}` : "";
+    const res = await fetch(`/api/calendar${qs}`);
+    const data = await res.json();
+    if (!res.ok) {
+      setCalendarError(data.error ?? "Failed to load calendar.");
+      return;
+    }
+    setTodayIST(data.today);
+    setCalendarCells(data.cells);
+    setCalendarRequested(data.requested);
+    setYearInput(String(data.requested.year));
+    setMonthInput(String(data.requested.month));
+  }
+
+  useEffect(() => {
+    let ignore = false;
+
+    (async () => {
+      if (!session?.authenticated) {
+        if (!ignore) {
+          setTodayIST(null);
+          setCalendarCells([]);
+          setCalendarRequested(null);
+        }
+        return;
+      }
+      await loadCalendar();
+    })();
+
+    return () => {
+      ignore = true;
+    };
+  }, [session]);
+
+  function handleLoadCalendar(e: React.FormEvent) {
+    e.preventDefault();
+    loadCalendar(Number(yearInput), Number(monthInput));
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -163,6 +223,59 @@ export default function BackendTestPage() {
             <button type="submit">Save</button>
             {salaryError ? <p style={{ color: "#b00020" }}>{salaryError}</p> : null}
           </form>
+
+          <h2>Calendar (Phase 5)</h2>
+          <p>
+            Today (Asia/Kolkata):{" "}
+            {todayIST
+              ? `${todayIST.year}-${todayIST.month}-${todayIST.day} (weekday ${todayIST.weekday}, 0=Sun)`
+              : "loading…"}
+          </p>
+          <form onSubmit={handleLoadCalendar}>
+            <label>
+              Year{" "}
+              <input
+                type="number"
+                value={yearInput}
+                onChange={(e) => setYearInput(e.target.value)}
+              />
+            </label>{" "}
+            <label>
+              Month (0-11){" "}
+              <input
+                type="number"
+                value={monthInput}
+                onChange={(e) => setMonthInput(e.target.value)}
+              />
+            </label>
+            <button type="submit">Load month</button>
+            {calendarError ? <p style={{ color: "#b00020" }}>{calendarError}</p> : null}
+          </form>
+          {calendarRequested ? (
+            <p>
+              Showing {calendarRequested.year}-{calendarRequested.month}
+            </p>
+          ) : null}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 44px)", gap: "2px" }}>
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
+              <div key={d} style={{ fontWeight: "bold", textAlign: "center" }}>
+                {d}
+              </div>
+            ))}
+            {calendarCells.map((c, i) => (
+              <div
+                key={i}
+                style={{
+                  textAlign: "center",
+                  padding: "6px 0",
+                  opacity: c.isCurrentMonth ? 1 : 0.4,
+                  border: c.isToday ? "2px solid #1a73e8" : "1px solid #ccc",
+                }}
+              >
+                {c.day}
+              </div>
+            ))}
+          </div>
         </>
       ) : null}
     </main>
