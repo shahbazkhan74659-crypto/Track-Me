@@ -172,7 +172,10 @@ The three-card row (Earned So Far, Advance Taken, Net Payable), styled per the p
 ### Objective
 Build the profile name/icon, the Salary Setup button, and the per-day salary display on the frontend, matching the approved prototype.
 
-**Status: Not started.**
+### Scope
+The header row (profile icon/name/subtitle + per-day-salary label + Salary Setup button), placed above the stat cards. Asked the owner whether the Salary Setup modal itself (₹ input, Cancel/Save) belonged in this phase, given its objective text doesn't name it explicitly and no other phase does either (the same gap Phase 10 had with the date-entry modal) — the owner said yes, include it, since Phase 12's own title says "...& Salary Setup" and nothing else claims it. Built as local-only UI state: Save updates the displayed rate in memory only; nothing persists until Phase 14 wires the real `PUT /api/salary` (Phase 4). Save is disabled unless the input is a finite number `> 0` — a deliberate small improvement over the prototype's unvalidated save, previewing the validation `PUT /api/salary` already enforces. Not cross-wired to the stat cards this phase — setting a rate here doesn't change what Phase 11's cards show; that connection is Phase 14, not this one.
+
+**Status: Complete.** Verified 2026-09-05: `npm run build`/`npm run lint` passed clean; grep of the new components and `app/page.tsx` found no `fetch`/`lib/db`/`lib/auth`/`/api/` usage; the running dev server's rendered HTML confirmed "Attendance", "Personal record", "Salary Setup", and "Not set" all render. As with Phases 10–11, the modal's actual open/close/save interactivity wasn't checked in a browser this session (Chrome automation unavailable) — the owner should give it a manual pass, and should expect that setting a rate here won't yet change the stat cards (that's Phase 14, not a bug).
 
 ## Phase 13 — Date Entry Modal on Frontend
 

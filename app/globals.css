@@ -36,3 +36,50 @@ body {
 .today-link:hover {
   text-decoration: underline;
 }
+
+.btn-outline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1.5px solid oklch(30% 0.015 260);
+  background: oklch(20% 0.012 260);
+  color: oklch(94% 0.005 260);
+  font-family: "Work Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-outline:hover {
+  border-color: oklch(70% 0.15 262);
+  color: oklch(70% 0.15 262);
+}
+
+.btn-primary {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: oklch(70% 0.15 262);
+  color: oklch(15% 0.01 260);
+  font-family: "Manrope", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.btn-primary:hover {
+  background: oklch(76% 0.12 262);
+}
+.btn-primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  opacity: 0.5;
+  filter: invert(1);
+}

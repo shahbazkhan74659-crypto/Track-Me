@@ -14,4 +14,5 @@ export const colors = {
   netPanelBorder: "oklch(40% 0.09 262)",
   netAccentText: "oklch(82% 0.11 262)",
   netAccentTextMuted: "oklch(68% 0.075 262)",
+  inputPrefixBackground: "oklch(25% 0.013 260)",
 } as const;
