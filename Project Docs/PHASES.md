@@ -98,7 +98,13 @@ Added `lib/calendar.ts`, a pure, dependency-free calendar utility module: `getTo
 ### Objective
 Build the backend behind the clickable per-date entry modal.
 
-**Status: Not started.**
+### Scope
+Added a new `entries` table (`db/schema.sql`): one row per user per calendar date (`UNIQUE (user_id, year, month, day)`, 0-indexed month matching `lib/calendar.ts`'s convention), storing `status` (`'present'|'half'|'leave'`), a dedicated `advance_on` boolean, and the `advance` amount — created and granted to `trackme_app` by the owner via `psql` (superuser-only operation, consistent with every prior schema change). Added an auth-gated `app/api/entries/route.ts` with `GET` (month-scoped list, query params, defaults to current IST month, rolls month over like `/api/calendar`), `PUT` (upserts one date's entry via `ON CONFLICT`, rejecting rather than rolling over an out-of-range month/day since it targets one exact row), and `DELETE` (clears one date's entry, idempotent). Validation reproduces the approved prototype's invariants exactly: `status` is required (the server-side twin of the Done button's disabled-without-status rule), and `advance_on`/`advance` are independent — a ₹0 advance with the checkbox on still persists as `advanceOn: true, advance: 0`, never collapsed to "no advance". Extended the test page with a Date Entry section: calendar cells are now clickable, opening an inline editor (status radio buttons, advance checkbox + amount, Save, and Clear when an entry already exists) that mirrors the prototype's modal. No aggregate earned/advance/net-payable calculations — that's Phase 7.
+
+### Completion Criteria
+`GET`/`PUT`/`DELETE` all return 401 when logged out; `PUT`/`DELETE` return 400 for non-integer or out-of-range year/month/day (leap-year-correct), missing/invalid `status`, non-boolean `advanceOn`, or a non-finite/negative `advance` when `advanceOn` is true; saving with `advanceOn: true, advance: 0` round-trips correctly without collapsing to false; upserting an existing date updates it in place; clearing a date removes it and is idempotent; a month's `GET` returns exactly its own saved days, no adjacent-month leakage; `npm run build`/`npm run lint` pass clean.
+
+**Status: Complete.** Verified 2026-09-05 end-to-end against the running dev server and `trackme_dev` database: the owner applied the `entries` table + grants via `psql`, then save/update/clear, the ₹0-advance regression case, month-rollover on `GET`, all 400 validation cases (invalid status, day out of range for both a 30-day and a non-leap-February month, non-numeric advance), and 401-when-logged-out were all confirmed via direct API calls. See `ARCHITECTURE.md`'s "Clickable Date Modal Backend (Phase 6)" section and `DECISIONS.md`.
 
 ## Phase 7 — Salary / Advance / Attendance Calculation Backend
 

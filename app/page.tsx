@@ -33,6 +33,17 @@ export default function BackendTestPage() {
   const [monthInput, setMonthInput] = useState("");
   const [calendarError, setCalendarError] = useState<string | null>(null);
 
+  type EntryStatus = "present" | "half" | "leave";
+  type Entry = { status: EntryStatus; advanceOn: boolean; advance: number };
+
+  const [monthEntries, setMonthEntries] = useState<Record<number, Entry>>({});
+  const [entriesError, setEntriesError] = useState<string | null>(null);
+  const [openDay, setOpenDay] = useState<number | null>(null);
+  const [draftStatus, setDraftStatus] = useState<EntryStatus | null>(null);
+  const [draftAdvanceOn, setDraftAdvanceOn] = useState(false);
+  const [draftAdvanceAmt, setDraftAdvanceAmt] = useState("");
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   async function refreshSession() {
     const res = await fetch("/api/auth/session");
     setSession(await res.json());
@@ -110,6 +121,117 @@ export default function BackendTestPage() {
   function handleLoadCalendar(e: React.FormEvent) {
     e.preventDefault();
     loadCalendar(Number(yearInput), Number(monthInput));
+  }
+
+  async function loadEntries(year: number, month: number) {
+    setEntriesError(null);
+    const res = await fetch(`/api/entries?year=${year}&month=${month}`);
+    const data = await res.json();
+    if (!res.ok) {
+      setEntriesError(data.error ?? "Failed to load entries.");
+      return;
+    }
+    const byDay: Record<number, Entry> = {};
+    for (const e of data.entries as Array<{
+      day: number;
+      status: EntryStatus;
+      advanceOn: boolean;
+      advance: number;
+    }>) {
+      byDay[e.day] = { status: e.status, advanceOn: e.advanceOn, advance: e.advance };
+    }
+    setMonthEntries(byDay);
+  }
+
+  useEffect(() => {
+    let ignore = false;
+
+    (async () => {
+      if (!calendarRequested) return;
+      const year = calendarRequested.year;
+      const month = calendarRequested.month;
+
+      setEntriesError(null);
+      const res = await fetch(`/api/entries?year=${year}&month=${month}`);
+      const data = await res.json();
+      if (ignore) return;
+      if (!res.ok) {
+        setEntriesError(data.error ?? "Failed to load entries.");
+        return;
+      }
+      const byDay: Record<number, Entry> = {};
+      for (const e of data.entries as Array<{
+        day: number;
+        status: EntryStatus;
+        advanceOn: boolean;
+        advance: number;
+      }>) {
+        byDay[e.day] = { status: e.status, advanceOn: e.advanceOn, advance: e.advance };
+      }
+      setMonthEntries(byDay);
+    })();
+
+    return () => {
+      ignore = true;
+    };
+  }, [calendarRequested]);
+
+  function handleOpenDay(day: number) {
+    setSaveError(null);
+    const existing = monthEntries[day];
+    setOpenDay(day);
+    setDraftStatus(existing ? existing.status : null);
+    setDraftAdvanceOn(existing ? existing.advanceOn : false);
+    setDraftAdvanceAmt(existing && existing.advanceOn ? String(existing.advance) : "");
+  }
+
+  async function handleSaveEntry() {
+    if (openDay === null || !draftStatus || !calendarRequested) return;
+    setSaveError(null);
+
+    const res = await fetch("/api/entries", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        year: calendarRequested.year,
+        month: calendarRequested.month,
+        day: openDay,
+        status: draftStatus,
+        advanceOn: draftAdvanceOn,
+        advance: draftAdvanceOn ? Number(draftAdvanceAmt) || 0 : 0,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      setSaveError(data.error ?? "Save failed.");
+      return;
+    }
+    await loadEntries(calendarRequested.year, calendarRequested.month);
+    setOpenDay(null);
+  }
+
+  async function handleClearEntry() {
+    if (openDay === null || !calendarRequested) return;
+    setSaveError(null);
+
+    const res = await fetch("/api/entries", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        year: calendarRequested.year,
+        month: calendarRequested.month,
+        day: openDay,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      setSaveError(data.error ?? "Clear failed.");
+      return;
+    }
+    await loadEntries(calendarRequested.year, calendarRequested.month);
+    setOpenDay(null);
   }
 
   async function handleLogin(e: React.FormEvent) {
@@ -263,19 +385,73 @@ export default function BackendTestPage() {
               </div>
             ))}
             {calendarCells.map((c, i) => (
-              <div
+              <button
                 key={i}
+                onClick={() => c.isCurrentMonth && handleOpenDay(c.day)}
+                disabled={!c.isCurrentMonth}
                 style={{
                   textAlign: "center",
                   padding: "6px 0",
                   opacity: c.isCurrentMonth ? 1 : 0.4,
-                  border: c.isToday ? "2px solid #1a73e8" : "1px solid #ccc",
+                  border:
+                    c.isCurrentMonth && monthEntries[c.day]
+                      ? "2px solid green"
+                      : c.isToday
+                        ? "2px solid #1a73e8"
+                        : "1px solid #ccc",
                 }}
               >
                 {c.day}
-              </div>
+              </button>
             ))}
           </div>
+
+          <h2>Date Entry (Phase 6)</h2>
+          {entriesError ? <p style={{ color: "#b00020" }}>{entriesError}</p> : null}
+          <p>Click a day above (bordered green if it already has a saved entry) to edit it.</p>
+
+          {openDay !== null ? (
+            <div style={{ border: "1px solid #ccc", padding: "1rem", marginTop: "1rem" }}>
+              <p>Editing day {openDay}</p>
+              {(["present", "half", "leave"] as const).map((s) => (
+                <label key={s} style={{ marginRight: "1rem" }}>
+                  <input
+                    type="radio"
+                    name="status"
+                    checked={draftStatus === s}
+                    onChange={() => setDraftStatus(s)}
+                  />{" "}
+                  {s}
+                </label>
+              ))}
+              <div>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={draftAdvanceOn}
+                    onChange={(e) => setDraftAdvanceOn(e.target.checked)}
+                  />{" "}
+                  Advance taken
+                </label>{" "}
+                {draftAdvanceOn ? (
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={draftAdvanceAmt}
+                    onChange={(e) => setDraftAdvanceAmt(e.target.value)}
+                  />
+                ) : null}
+              </div>
+              <button onClick={handleSaveEntry} disabled={!draftStatus}>
+                Save
+              </button>{" "}
+              {monthEntries[openDay] ? (
+                <button onClick={handleClearEntry}>Clear</button>
+              ) : null}{" "}
+              <button onClick={() => setOpenDay(null)}>Close</button>
+              {saveError ? <p style={{ color: "#b00020" }}>{saveError}</p> : null}
+            </div>
+          ) : null}
         </>
       ) : null}
     </main>
