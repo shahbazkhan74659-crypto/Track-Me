@@ -125,6 +125,24 @@ These decisions were made during initial prototyping. They are recorded here as 
 - Reasoning: Matches the real traffic pattern (load one month, mutate individual already-known dates against it) without a redundant second "get one date" endpoint; keeps the identity-vs-navigation distinction explicit rather than applying one rollover policy uniformly where it would be unsafe for writes.
 - Consequences: Any future date-scoped endpoint in this app should default to this same split (query-param month-list `GET`, body-based single-item mutation) unless there's a specific reason to deviate. See `ARCHITECTURE.md`'s "Clickable Date Modal Backend (Phase 6)" section.
 
+## Decision: Summary endpoint returns null earned/netPayable (not 0, not a 4xx) when no per-day rate is set
+
+- Status: Accepted
+- Date: 2026-09-05
+- Context: `PHASES.md`'s Phase 7 (Salary / Advance / Attendance Calculation Backend) needed to decide what `GET /api/summary` returns when `users.per_day_salary` is `NULL` — a real, valid account state in production (Phase 4's deliberate design: NULL means the owner hasn't set a rate yet, unlike the approved prototype, which always assumed a sample ₹800 rate and never had to handle this case).
+- Decision: `presentDays`/`halfDays`/`leaveDays`/`advanceTaken` are always computed and returned as real numbers, independent of whether a rate is set. `earned` and `netPayable` are `null` when `perDaySalary` is `null`. The endpoint always returns HTTP 200 in this case, never a 4xx.
+- Reasoning: A missing rate is an expected, valid state (the owner simply hasn't configured Salary Setup yet), not a client error — treating it as a 4xx would be conflating "no data" with "bad request." Day counts and advance-taken don't depend on the rate at all and shouldn't be blocked from displaying just because the money math can't run yet. This mirrors `/api/salary GET`'s own existing behavior of returning `perDaySalary: null` rather than erroring.
+- Consequences: Any frontend consuming this endpoint (Phases 9–13) must handle `earned`/`netPayable` being `null` as a distinct, expected UI state ("set a rate to see earnings"), not treat it as a fetch failure. See `ARCHITECTURE.md`'s "Salary / Advance / Attendance Calculation Backend (Phase 7)" section.
+
+## Decision: Summary aggregation via SQL FILTER clauses, two flat queries, no join
+
+- Status: Accepted
+- Date: 2026-09-05
+- Context: Phase 7's `GET /api/summary` needed present/half/leave day counts and total advance taken for a given month, plus the user's per-day rate. Two approaches were considered: fetching all of the month's raw entry rows and reducing them in JavaScript (the same style `/api/entries GET` already uses, since that route needs the raw per-day list anyway), versus computing the aggregates directly in SQL.
+- Decision: One SQL query using Postgres `COUNT(*) FILTER (WHERE ...)` / `SUM(...) FILTER (WHERE ...)` against `entries`, run in parallel (`Promise.all`) with a separate, simple `SELECT per_day_salary FROM users WHERE id = $1` — not a `LEFT JOIN` between the two tables, and not a JS-side loop over fetched rows.
+- Reasoning: This route only ever needs the aggregates, never the raw per-day list, so computing them in SQL avoids transferring and looping over rows client-side for no benefit. Two flat queries (rather than one `LEFT JOIN` query) matches this codebase's existing no-joins style (`/api/salary` and `/api/entries` are both single flat queries) and avoids `LEFT JOIN`-with-aggregate edge cases (e.g. needing `GROUP BY` semantics to combine a single-row `users` lookup with a variable-row `entries` aggregation).
+- Consequences: Any future aggregation endpoint in this app should default to this same pattern (SQL-side aggregation via `FILTER`, flat queries over joins) unless there's a specific reason to deviate. See `ARCHITECTURE.md`'s "Salary / Advance / Attendance Calculation Backend (Phase 7)" section.
+
 ## Decision: Reused pre-existing local PostgreSQL 18 instead of installing v17 via winget
 
 - Status: Accepted

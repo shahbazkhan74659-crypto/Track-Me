@@ -44,6 +44,21 @@ export default function BackendTestPage() {
   const [draftAdvanceAmt, setDraftAdvanceAmt] = useState("");
   const [saveError, setSaveError] = useState<string | null>(null);
 
+  type Summary = {
+    year: number;
+    month: number;
+    perDaySalary: number | null;
+    presentDays: number;
+    halfDays: number;
+    leaveDays: number;
+    advanceTaken: number;
+    earned: number | null;
+    netPayable: number | null;
+  };
+
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+
   async function refreshSession() {
     const res = await fetch("/api/auth/session");
     setSession(await res.json());
@@ -176,6 +191,33 @@ export default function BackendTestPage() {
     };
   }, [calendarRequested]);
 
+  async function loadSummary(year: number, month: number) {
+    setSummaryError(null);
+    const res = await fetch(`/api/summary?year=${year}&month=${month}`);
+    const data = await res.json();
+    if (!res.ok) {
+      setSummaryError(data.error ?? "Failed to load summary.");
+      return;
+    }
+    setSummary(data);
+  }
+
+  useEffect(() => {
+    let ignore = false;
+
+    (async () => {
+      if (!calendarRequested) {
+        if (!ignore) setSummary(null);
+        return;
+      }
+      await loadSummary(calendarRequested.year, calendarRequested.month);
+    })();
+
+    return () => {
+      ignore = true;
+    };
+  }, [calendarRequested]);
+
   function handleOpenDay(day: number) {
     setSaveError(null);
     const existing = monthEntries[day];
@@ -208,6 +250,7 @@ export default function BackendTestPage() {
       return;
     }
     await loadEntries(calendarRequested.year, calendarRequested.month);
+    await loadSummary(calendarRequested.year, calendarRequested.month);
     setOpenDay(null);
   }
 
@@ -231,6 +274,7 @@ export default function BackendTestPage() {
       return;
     }
     await loadEntries(calendarRequested.year, calendarRequested.month);
+    await loadSummary(calendarRequested.year, calendarRequested.month);
     setOpenDay(null);
   }
 
@@ -278,6 +322,9 @@ export default function BackendTestPage() {
 
     setPerDaySalary(data.perDaySalary);
     setSalaryInput("");
+    if (calendarRequested) {
+      await loadSummary(calendarRequested.year, calendarRequested.month);
+    }
   }
 
   return (
@@ -452,6 +499,45 @@ export default function BackendTestPage() {
               {saveError ? <p style={{ color: "#b00020" }}>{saveError}</p> : null}
             </div>
           ) : null}
+
+          <h2>Summary (Phase 7)</h2>
+          {summaryError ? <p style={{ color: "#b00020" }}>{summaryError}</p> : null}
+          {summary ? (
+            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+              <div style={{ border: "1px solid #ccc", padding: "1rem", minWidth: "160px" }}>
+                <p style={{ margin: 0, fontWeight: "bold" }}>Earned So Far</p>
+                <p style={{ margin: 0 }}>
+                  {summary.perDaySalary === null
+                    ? "Set a per-day rate to see earnings"
+                    : `₹${summary.earned}`}
+                </p>
+                <p style={{ margin: 0, fontSize: "0.85rem" }}>
+                  {summary.presentDays} present · {summary.halfDays} half-day
+                  {summary.halfDays === 1 ? "" : "s"}
+                </p>
+              </div>
+              <div style={{ border: "1px solid #ccc", padding: "1rem", minWidth: "160px" }}>
+                <p style={{ margin: 0, fontWeight: "bold" }}>Advance Taken</p>
+                <p style={{ margin: 0 }}>₹{summary.advanceTaken}</p>
+                <p style={{ margin: 0, fontSize: "0.85rem" }}>
+                  {summary.advanceTaken > 0 ? "Deducted from this month" : "No advances taken"}
+                </p>
+              </div>
+              <div style={{ border: "1px solid #ccc", padding: "1rem", minWidth: "160px" }}>
+                <p style={{ margin: 0, fontWeight: "bold" }}>Net Payable</p>
+                <p style={{ margin: 0 }}>
+                  {summary.netPayable === null
+                    ? "Set a per-day rate to see earnings"
+                    : `₹${summary.netPayable}`}
+                </p>
+                <p style={{ margin: 0, fontSize: "0.85rem" }}>
+                  {summary.leaveDays} leave day{summary.leaveDays === 1 ? "" : "s"}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p>No summary yet.</p>
+          )}
         </>
       ) : null}
     </main>
