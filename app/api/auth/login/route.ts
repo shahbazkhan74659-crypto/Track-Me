@@ -2,8 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { pool } from "@/lib/db";
 import { createSession, SESSION_COOKIE_NAME } from "@/lib/auth";
+import { checkRateLimit, recordFailedAttempt, resetRateLimit } from "@/lib/rateLimit";
+
+function clientIp(request: NextRequest): string {
+  return request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
+}
 
 export async function POST(request: NextRequest) {
+  const ip = clientIp(request);
+  const rate = checkRateLimit(ip);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "Too many login attempts. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfterSeconds) } },
+    );
+  }
+
   const { username, password } = (await request.json()) as {
     username?: string;
     password?: string;
@@ -19,14 +33,17 @@ export async function POST(request: NextRequest) {
   );
   const user = result.rows[0];
 
-  const invalidResponse = () =>
-    NextResponse.json({ error: "Invalid username or password." }, { status: 401 });
+  const invalidResponse = () => {
+    recordFailedAttempt(ip);
+    return NextResponse.json({ error: "Invalid username or password." }, { status: 401 });
+  };
 
   if (!user) return invalidResponse();
 
   const passwordMatches = await bcrypt.compare(password, user.password_hash);
   if (!passwordMatches) return invalidResponse();
 
+  resetRateLimit(ip);
   const { token, expiresAt } = await createSession(user.id);
 
   const response = NextResponse.json({ ok: true });
