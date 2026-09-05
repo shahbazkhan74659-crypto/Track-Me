@@ -143,6 +143,15 @@ These decisions were made during initial prototyping. They are recorded here as 
 - Reasoning: This route only ever needs the aggregates, never the raw per-day list, so computing them in SQL avoids transferring and looping over rows client-side for no benefit. Two flat queries (rather than one `LEFT JOIN` query) matches this codebase's existing no-joins style (`/api/salary` and `/api/entries` are both single flat queries) and avoids `LEFT JOIN`-with-aggregate edge cases (e.g. needing `GROUP BY` semantics to combine a single-row `users` lookup with a variable-row `entries` aggregation).
 - Consequences: Any future aggregation endpoint in this app should default to this same pattern (SQL-side aggregation via `FILTER`, flat queries over joins) unless there's a specific reason to deviate. See `ARCHITECTURE.md`'s "Salary / Advance / Attendance Calculation Backend (Phase 7)" section.
 
+## Decision: Plain Node script chosen over a test framework for Phase 8
+
+- Status: Accepted
+- Date: 2026-09-05
+- Context: No test framework (Jest/Vitest/Playwright/etc.) has ever been introduced in this project — `package.json` has no such dependency, and every prior phase (3–7) was verified manually via direct `curl`/`psql` calls against the running dev server. Phase 8 ("Full Backend Testing & Temporary Page Removal") needed a way to exercise every backend route repeatably without corrupting the app's one real account's data.
+- Decision: Write one plain Node ESM script, `scripts/test-backend.mjs`, following `scripts/seed-user.mjs`'s exact conventions (no new dependencies, CLI-arg credentials, direct `fetch` against the running dev server) rather than adopting a test framework.
+- Reasoning: Matches this project's established zero-framework, single-script utility pattern; avoids the setup/config overhead of a real test framework for a single-owner, single-account personal app at this stage; still gives a genuine, repeatable pass/fail gate (per-assertion output, summary, exit code) without new dependencies.
+- Consequences: If a future phase (e.g. Phase 15, End-to-End Testing & Production Readiness) needs richer testing (isolated test databases, mocking, CI integration), introducing a real framework then would be a new decision, not an extension of this one. `scripts/test-backend.mjs` is a manual, repeatable verification tool, not a CI-wired test suite. See `ARCHITECTURE.md`'s "Full Backend Testing & Temporary Page Removal (Phase 8)" section.
+
 ## Decision: Reused pre-existing local PostgreSQL 18 instead of installing v17 via winget
 
 - Status: Accepted

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Track Me — Backend Test Page",
-  description: "Temporary harness for exercising Track Me's backend engines (Phase 2).",
+  title: "Track Me",
+  description: "Personal attendance tracker — backend complete; no frontend yet (see Phase 9 onward).",
 };
 
 export default function RootLayout({
