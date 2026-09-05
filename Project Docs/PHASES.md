@@ -162,7 +162,10 @@ Added `components/CalendarCard.tsx` (`"use client"`, since month navigation need
 ### Objective
 Build the Total Salary, Advance Taken, and Net Salary stat cards on the frontend, matching the approved prototype.
 
-**Status: Not started.**
+### Scope
+The three-card row (Earned So Far, Advance Taken, Net Payable), styled per the prototype, placed above the calendar card. No per-day rate can be entered yet (Salary Setup is Phase 12) and no attendance/advance can be logged yet (the date-entry modal is Phase 13), so there is no real data source for these numbers this phase — the cards render exactly the "unset rate" state Phase 7's `GET /api/summary` already defines: day counts and advance-taken are real zeros, `earned`/`netPayable` are the null/placeholder case (`DECISIONS.md`'s Phase 7 entry: "Set a rate to see earnings"). Added `lib/format.ts`'s `formatINR` (the prototype's `fmtINR`, exactly) as the first shared currency formatter, for Phase 12/13 to reuse. No backend connection (that's Phase 14).
+
+**Status: Complete.** Verified 2026-09-05: `npm run build`/`npm run lint` passed clean; grep of `components/StatCards.tsx`, `lib/format.ts`, and `app/page.tsx` found no `fetch(`/`lib/db`/`lib/auth`/`/api/` imports or calls (one comment references `/api/summary` by name only, explaining the placeholder-state parallel); the running dev server's rendered HTML confirmed all three card labels, the "Set a rate to see earnings" placeholder, and "No advances taken". As with Phase 10, browser-based visual verification wasn't performed this session (Chrome automation unavailable) — the owner should eyeball spacing/colors against the prototype in a browser.
 
 ## Phase 12 — Profile & Salary Setup on Frontend
 

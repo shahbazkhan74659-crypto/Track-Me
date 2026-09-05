@@ -10,4 +10,8 @@ export const colors = {
   statusPresent: "oklch(72% 0.16 152)",
   statusHalf: "oklch(78% 0.15 80)",
   statusLeave: "oklch(72% 0.17 22)",
+  netPanelBackground: "oklch(27% 0.05 262)",
+  netPanelBorder: "oklch(40% 0.09 262)",
+  netAccentText: "oklch(82% 0.11 262)",
+  netAccentTextMuted: "oklch(68% 0.075 262)",
 } as const;
