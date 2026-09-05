@@ -1,6 +1,6 @@
 # Development Phases
 
-The project owner has defined the full development roadmap, Phase 0 through Phase 19 (locked 2026-09-04; renumbered 2026-09-04 to inject Phase 14). Phase 0 is complete; the production stack is locked (see `DECISIONS.md`). Phase 2 was originally a single broad "Production Project Setup" phase — the owner replaced it with the detailed Phase 2–18 breakdown below in the same message that locked the roadmap. The owner later injected a new Phase 14 ("Mobile View / Mobile Responsive"), pushing what was Phase 14–18 to Phase 15–19 — see `DECISIONS.md`'s "Phase 14 injected for mobile responsiveness" entry. Do not invent additional phases beyond what is listed here, and do not reorder or renumber these without the owner explicitly directing it — see `CLAUDE.md` rule 3.
+The project owner has defined the full development roadmap, Phase 0 through Phase 20 (locked 2026-09-04; renumbered twice since — see below). Phase 0 is complete; the production stack is locked (see `DECISIONS.md`). Phase 2 was originally a single broad "Production Project Setup" phase — the owner replaced it with the detailed Phase 2–18 breakdown below in the same message that locked the roadmap. The owner later injected a new Phase 14 ("Mobile View / Mobile Responsive"), pushing what was Phase 14–18 to Phase 15–19 — see `DECISIONS.md`'s "Phase 14 injected for mobile responsiveness" entry. On 2026-09-05, starting Phase 10 surfaced that no phase named the frontend's clickable date-entry modal, so the owner split it out of Phase 10 into a new Phase 13 ("Date Entry Modal on Frontend"), pushing what was Phase 13–19 to Phase 14–20 — see `DECISIONS.md`'s "Phase 13 'Date Entry Modal on Frontend' injected" entry. Do not invent additional phases beyond what is listed here, and do not reorder or renumber these without the owner explicitly directing it — see `CLAUDE.md` rule 3.
 
 ## Phase 0 — Pre-Development (Planning & Prototyping)
 
@@ -150,7 +150,12 @@ Recreated `app/page.tsx` (deleted in Phase 8) as a genuinely blank shell: a dark
 ### Objective
 Build the calendar UI on the frontend, matching the approved prototype.
 
-**Status: Not started.**
+### Scope
+The calendar card only: month/year navigation header (prev/next chevrons, "Month YYYY" label, "Today" shortcut), the Sun–Sat weekday row, the 42-cell month grid (adjacent-month days dimmed, today ringed), and the Present/Half-day/Leave/Advance-taken legend. Narrowed 2026-09-05, at the owner's direction, to exclude the clickable date-entry modal — clicking a cell does nothing yet. That modal (status buttons, advance checkbox + amount, Save/Clear) is now its own phase, [Phase 13] "Date Entry Modal on Frontend" (new, inserted the same day) — see `DECISIONS.md`'s "Phase 13 'Date Entry Modal on Frontend' injected" entry. No backend connection (that's Phase 14).
+
+Added `components/CalendarCard.tsx` (`"use client"`, since month navigation needs local React state), reusing `lib/calendar.ts`'s existing `getTodayIST`/`buildMonthGrid`/`normalizeYearMonth` directly (pure, dependency-free, safe to import client-side) rather than re-implementing calendar math — the real current Asia/Kolkata date drives the initial view and the "Today" shortcut, not a hardcoded sample month like the prototype. Extended `lib/theme.ts` with exactly the palette entries this component needs (`textMuted`, `accent`, `border`, `panelBackground`, `panelBorder`, `cellBackground`, `statusPresent`/`statusHalf`/`statusLeave`), continuing Phase 9's incremental-palette approach. Rendered inside `app/page.tsx`'s existing centered column. Two interactive elements (the chevron buttons and the "Today" link) needed `:hover` states, which inline styles can't express — matching the prototype's own approach of moving anything with a `:hover` rule into a real CSS class, added two small classes to `app/globals.css` (`.chevron-btn`, `.today-link`) rather than introducing a CSS framework. No fetch/database/auth import anywhere in the new or changed files (confirmed via grep, same check used in Phase 9).
+
+**Status: Complete.** Verified 2026-09-05: `npm run build` and `npm run lint` both passed clean; a grep of `components/CalendarCard.tsx` and `app/page.tsx` for `fetch(`/`lib/db`/`lib/auth`/`/api/` returned zero matches; the rendered page (checked directly against the running dev server) showed the correct real current month ("September 2026"), exactly 42 grid cells, and the full Present/Half-day/Leave/Advance-taken legend. Browser-based visual/interactive verification (hover states, click navigation, the today ring, adjacent-month dimming) was not performed in this session — Chrome browser automation wasn't connected — so the owner should give it a visual pass in a browser before considering this phase's UI final.
 
 ## Phase 11 — Stat Cards on Frontend
 
@@ -166,52 +171,62 @@ Build the profile name/icon, the Salary Setup button, and the per-day salary dis
 
 **Status: Not started.**
 
-## Phase 13 — Wire Frontend to Backend
+## Phase 13 — Date Entry Modal on Frontend
+
+### Objective
+Build the clickable date-entry modal on the frontend (status buttons, advance checkbox + amount, Save/Clear), matching the approved prototype.
+
+### Scope
+Inserted into the roadmap 2026-09-05 — see `DECISIONS.md`'s "Phase 13 'Date Entry Modal on Frontend' injected" entry. Split out of Phase 10 because neither Phase 10's "Calendar on Frontend" objective nor any other named phase explicitly covered the clickable modal the prototype's calendar cells open. Local UI state only (an in-memory entries object, as in the prototype) — not yet wired to the real `entries` backend built in Phase 6; that connection happens in Phase 14.
+
+**Status: Not started.**
+
+## Phase 14 — Wire Frontend to Backend
 
 ### Objective
 Connect every static card, button, profile element, and the calendar on the frontend to the real backend built in Phases 3–7.
 
 **Status: Not started.**
 
-## Phase 14 — Mobile View / Mobile Responsive
+## Phase 15 — Mobile View / Mobile Responsive
 
 ### Objective
 Make the full site fully mobile responsive.
 
 ### Scope
-Injected into the roadmap 2026-09-04 (originally Phase 0–18 had no dedicated mobile-responsiveness phase) — see `DECISIONS.md`'s "Phase 14 injected for mobile responsiveness" entry. Placed after Phase 13 (frontend fully wired to the backend) and before end-to-end testing/production readiness, so responsiveness work happens once the app is functionally complete but before final testing and deployment.
+Injected into the roadmap 2026-09-04 (originally Phase 0–18 had no dedicated mobile-responsiveness phase) — see `DECISIONS.md`'s "Phase 14 injected for mobile responsiveness" entry. Placed after Phase 14 (frontend fully wired to the backend) and before end-to-end testing/production readiness, so responsiveness work happens once the app is functionally complete but before final testing and deployment. Renumbered from Phase 14 to Phase 15 on 2026-09-05 when Phase 13 "Date Entry Modal on Frontend" was inserted — see `DECISIONS.md`'s "Phase 13 'Date Entry Modal on Frontend' injected" entry.
 
 **Status: Not started.**
 
-## Phase 15 — End-to-End Testing & Production Readiness
+## Phase 16 — End-to-End Testing & Production Readiness
 
 ### Objective
 Test the fully wired app end to end and make it production-ready for deployment on Render's free tier.
 
 **Status: Not started.**
 
-## Phase 16 — Neon PostgreSQL Setup
+## Phase 17 — Neon PostgreSQL Setup
 
 ### Objective
 Provision the Neon PostgreSQL production database and store its connection credentials in `.env`.
 
 **Status: Not started.**
 
-## Phase 17 — Deployment on Render
+## Phase 18 — Deployment on Render
 
 ### Objective
 Deploy the app to Render.
 
 **Status: Not started.**
 
-## Phase 18 — UptimeRobot Setup
+## Phase 19 — UptimeRobot Setup
 
 ### Objective
 Configure an UptimeRobot keep-alive monitor against the deployed app.
 
 **Status: Not started.**
 
-## Phase 19 — Live Site End-to-End Testing
+## Phase 20 — Live Site End-to-End Testing
 
 ### Objective
 Test the deployed, live site end to end.

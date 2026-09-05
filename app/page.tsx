@@ -1,3 +1,4 @@
+import CalendarCard from "@/components/CalendarCard";
 import { colors } from "@/lib/theme";
 
 export default function HomePage() {
@@ -12,7 +13,9 @@ export default function HomePage() {
         overflow: "hidden",
       }}
     >
-      <div style={{ maxWidth: 880, margin: "0 auto" }} />
+      <div style={{ maxWidth: 880, margin: "0 auto" }}>
+        <CalendarCard />
+      </div>
     </div>
   );
 }

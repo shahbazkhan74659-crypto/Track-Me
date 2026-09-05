@@ -9,3 +9,30 @@ body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
+
+.chevron-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1.5px solid oklch(30% 0.015 260);
+  background: oklch(20% 0.012 260);
+  color: oklch(70% 0.02 260);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.chevron-btn:hover {
+  border-color: oklch(70% 0.15 262);
+  color: oklch(70% 0.15 262);
+}
+
+.today-link {
+  cursor: pointer;
+}
+.today-link:hover {
+  text-decoration: underline;
+}
