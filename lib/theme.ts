@@ -15,4 +15,9 @@ export const colors = {
   netAccentText: "oklch(82% 0.11 262)",
   netAccentTextMuted: "oklch(68% 0.075 262)",
   inputPrefixBackground: "oklch(25% 0.013 260)",
+  statusPresentSoft: "oklch(27% 0.05 152)",
+  statusHalfSoft: "oklch(29% 0.055 80)",
+  statusLeaveSoft: "oklch(28% 0.055 22)",
+  disabledControlBackground: "oklch(28% 0.008 260)",
+  disabledControlText: "oklch(50% 0.012 260)",
 } as const;

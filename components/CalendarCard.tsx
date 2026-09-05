@@ -1,14 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { buildMonthGrid, getTodayIST, normalizeYearMonth } from "@/lib/calendar";
+import { buildMonthGrid, getTodayIST, normalizeYearMonth, type CalendarCell } from "@/lib/calendar";
 import { colors } from "@/lib/theme";
+import DateEntryModal from "@/components/DateEntryModal";
+
+export type Status = "present" | "half" | "leave";
+export interface DateEntry {
+  status: Status;
+  advanceOn: boolean;
+  advance: number;
+}
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
 ];
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const WEEKDAY_NAMES_FULL = [
+  "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
+];
+
+function entryKey(year: number, month: number, day: number): string {
+  return `${year}-${month}-${day}`;
+}
 
 function LegendDot({ color, label }: { color: string; label: string }) {
   return (
@@ -24,6 +39,10 @@ function LegendDot({ color, label }: { color: string; label: string }) {
 export default function CalendarCard() {
   const today = getTodayIST();
   const [view, setView] = useState({ year: today.year, month: today.month });
+  // Local-only, in-memory entries — not wired to the real entries backend
+  // (app/api/entries/route.ts) yet; that connection happens in Phase 14.
+  const [entries, setEntries] = useState<Record<string, DateEntry>>({});
+  const [openCell, setOpenCell] = useState<CalendarCell | null>(null);
 
   const cells = buildMonthGrid(view.year, view.month, today);
 
@@ -31,7 +50,28 @@ export default function CalendarCard() {
   const nextMonth = () => setView(({ year, month }) => normalizeYearMonth(year, month + 1));
   const goToday = () => setView({ year: today.year, month: today.month });
 
+  const openDateKey = openCell ? entryKey(openCell.year, openCell.month, openCell.day) : null;
+  const modalTitle = openCell
+    ? `${WEEKDAY_NAMES_FULL[openCell.weekday]}, ${MONTH_NAMES[openCell.month].slice(0, 3)} ${openCell.day}`
+    : "";
+
+  const saveEntry = (entry: DateEntry) => {
+    if (!openDateKey) return;
+    setEntries((prev) => ({ ...prev, [openDateKey]: entry }));
+    setOpenCell(null);
+  };
+  const clearEntry = () => {
+    if (!openDateKey) return;
+    setEntries((prev) => {
+      const next = { ...prev };
+      delete next[openDateKey];
+      return next;
+    });
+    setOpenCell(null);
+  };
+
   return (
+    <>
     <div
       style={{
         background: colors.panelBackground,
@@ -95,33 +135,78 @@ export default function CalendarCard() {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7,minmax(0,1fr))", gap: 8 }}>
-        {cells.map((cell, i) => (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: 60,
-              borderRadius: 12,
-              background: colors.cellBackground,
-              border: `1px solid ${cell.isCurrentMonth ? colors.border : "transparent"}`,
-              boxShadow: cell.isToday ? `0 0 0 2px ${colors.accent}` : "none",
-              opacity: cell.isCurrentMonth ? 1 : 0.3,
-            }}
-          >
-            <span
+        {cells.map((cell, i) => {
+          const key = entryKey(cell.year, cell.month, cell.day);
+          const entry = cell.isCurrentMonth ? entries[key] : undefined;
+          let background: string = colors.cellBackground;
+          let dotColor: string | null = null;
+          if (entry?.status === "present") {
+            background = colors.statusPresentSoft;
+            dotColor = colors.statusPresent;
+          } else if (entry?.status === "half") {
+            background = colors.statusHalfSoft;
+            dotColor = colors.statusHalf;
+          } else if (entry?.status === "leave") {
+            background = colors.statusLeaveSoft;
+            dotColor = colors.statusLeave;
+          }
+
+          return (
+            <div
+              key={i}
+              onClick={cell.isCurrentMonth ? () => setOpenCell(cell) : undefined}
               style={{
-                fontFamily: "var(--font-manrope), sans-serif",
-                fontSize: 14,
-                fontWeight: cell.isCurrentMonth ? 600 : 500,
-                color: cell.isCurrentMonth ? colors.text : colors.textMuted,
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
+                height: 60,
+                borderRadius: 12,
+                background,
+                border: `1px solid ${cell.isCurrentMonth ? colors.border : "transparent"}`,
+                boxShadow: cell.isToday ? `0 0 0 2px ${colors.accent}` : "none",
+                opacity: cell.isCurrentMonth ? 1 : 0.3,
+                cursor: cell.isCurrentMonth ? "pointer" : "default",
               }}
             >
-              {cell.day}
-            </span>
-          </div>
-        ))}
+              {entry?.advanceOn && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: 4,
+                    right: 4,
+                    width: 14,
+                    height: 14,
+                    borderRadius: 999,
+                    background: colors.accent,
+                    color: colors.pageBackground,
+                    fontSize: 8,
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    lineHeight: 1,
+                  }}
+                >
+                  ₹
+                </span>
+              )}
+              <span
+                style={{
+                  fontFamily: "var(--font-manrope), sans-serif",
+                  fontSize: 14,
+                  fontWeight: cell.isCurrentMonth ? 600 : 500,
+                  color: cell.isCurrentMonth ? colors.text : colors.textMuted,
+                }}
+              >
+                {cell.day}
+              </span>
+              {dotColor && <span style={{ width: 6, height: 6, borderRadius: 999, background: dotColor }} />}
+            </div>
+          );
+        })}
       </div>
 
       <div
@@ -162,5 +247,16 @@ export default function CalendarCard() {
         </div>
       </div>
     </div>
+    {openCell && openDateKey && (
+      <DateEntryModal
+        key={openDateKey}
+        title={modalTitle}
+        existingEntry={entries[openDateKey] ?? null}
+        onClose={() => setOpenCell(null)}
+        onSave={saveEntry}
+        onClear={clearEntry}
+      />
+    )}
+    </>
   );
 }

@@ -83,3 +83,7 @@ input[type="number"]::-webkit-outer-spin-button {
   opacity: 0.5;
   filter: invert(1);
 }
+
+.status-btn:hover {
+  filter: brightness(1.1);
+}
