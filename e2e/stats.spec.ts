@@ -39,7 +39,7 @@ test.describe("Stat cards", () => {
 
     // earned = 3*800 + 1*400 = 2800; advance = 500; net = 2300.
     await expect(page.getByText("₹2,800")).toBeVisible();
-    await expect(page.getByText("3 present · 1 half-day")).toBeVisible();
+    await expect(page.getByText("3 present · 1 half-day · 1 leave")).toBeVisible();
     await expect(page.getByText("₹500", { exact: true })).toBeVisible();
     await expect(page.getByText("₹2,300")).toBeVisible();
   });

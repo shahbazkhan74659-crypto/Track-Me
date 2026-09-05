@@ -38,6 +38,7 @@ export default function StatCards({ summary }: StatCardsProps) {
   const advanceTaken = summary?.advanceTaken ?? 0;
   const presentDays = summary?.presentDays ?? 0;
   const halfDays = summary?.halfDays ?? 0;
+  const leaveDays = summary?.leaveDays ?? 0;
   const earned = summary?.earned ?? null;
   const netPayable = summary?.netPayable ?? null;
 
@@ -67,7 +68,7 @@ export default function StatCards({ summary }: StatCardsProps) {
         <div style={subtextStyle}>
           {perDaySalary === null
             ? "Set a rate to see earnings"
-            : `${presentDays} present · ${halfDays} half-day${halfDays === 1 ? "" : "s"}`}
+            : `${presentDays} present · ${halfDays} half-day${halfDays === 1 ? "" : "s"} · ${leaveDays} leave${leaveDays === 1 ? "" : "s"}`}
         </div>
       </div>
 
