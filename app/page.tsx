@@ -1,10 +1,31 @@
-import CalendarCard from "@/components/CalendarCard";
-import ProfileBadge from "@/components/ProfileBadge";
-import SalarySetupControl from "@/components/SalarySetupControl";
-import StatCards from "@/components/StatCards";
+import { cookies } from "next/headers";
+import AttendanceApp from "@/components/AttendanceApp";
+import LoginGate from "@/components/LoginGate";
+import { getSessionUser, SESSION_COOKIE_NAME } from "@/lib/auth";
 import { colors } from "@/lib/theme";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const cookieStore = await cookies();
+  const user = await getSessionUser(cookieStore.get(SESSION_COOKIE_NAME)?.value);
+
+  if (!user) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          width: "100%",
+          background: colors.pageBackground,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 24,
+        }}
+      >
+        <LoginGate />
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -15,23 +36,7 @@ export default function HomePage() {
         padding: "40px 24px 64px",
       }}
     >
-      <div style={{ maxWidth: 880, margin: "0 auto" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 28,
-            gap: 16,
-            flexWrap: "wrap",
-          }}
-        >
-          <ProfileBadge />
-          <SalarySetupControl />
-        </div>
-        <StatCards />
-        <CalendarCard />
-      </div>
+      <AttendanceApp />
     </div>
   );
 }

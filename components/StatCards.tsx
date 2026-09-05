@@ -1,6 +1,20 @@
 import { formatINR } from "@/lib/format";
 import { colors } from "@/lib/theme";
 
+export interface SummaryData {
+  perDaySalary: number | null;
+  presentDays: number;
+  halfDays: number;
+  leaveDays: number;
+  advanceTaken: number;
+  earned: number | null;
+  netPayable: number | null;
+}
+
+interface StatCardsProps {
+  summary: SummaryData | null;
+}
+
 const labelStyle = {
   fontFamily: "var(--font-work-sans), sans-serif",
   fontSize: 11,
@@ -17,13 +31,15 @@ const subtextStyle = {
   color: colors.textMuted,
 };
 
-export default function StatCards() {
-  // No per-day rate or entries can be set yet (Salary Setup is Phase 12, the
-  // date-entry modal is Phase 13, the backend isn't wired until Phase 14) —
-  // this is the same "unset rate" state GET /api/summary already returns:
-  // earned/netPayable are null, day counts and advance are real zeros.
-  const perDaySalary: number | null = null;
-  const advanceTaken = 0;
+export default function StatCards({ summary }: StatCardsProps) {
+  // While loading (summary === null) or before a rate is set, this renders
+  // the same "unset rate" placeholder GET /api/summary itself defines.
+  const perDaySalary = summary?.perDaySalary ?? null;
+  const advanceTaken = summary?.advanceTaken ?? 0;
+  const presentDays = summary?.presentDays ?? 0;
+  const halfDays = summary?.halfDays ?? 0;
+  const earned = summary?.earned ?? null;
+  const netPayable = summary?.netPayable ?? null;
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 20, marginBottom: 24 }}>
@@ -47,9 +63,13 @@ export default function StatCards() {
             marginBottom: 6,
           }}
         >
-          {perDaySalary === null ? "—" : formatINR(0)}
+          {earned === null ? "—" : formatINR(earned)}
         </div>
-        <div style={subtextStyle}>{perDaySalary === null ? "Set a rate to see earnings" : ""}</div>
+        <div style={subtextStyle}>
+          {perDaySalary === null
+            ? "Set a rate to see earnings"
+            : `${presentDays} present · ${halfDays} half-day${halfDays === 1 ? "" : "s"}`}
+        </div>
       </div>
 
       <div
@@ -97,7 +117,7 @@ export default function StatCards() {
             marginBottom: 6,
           }}
         >
-          {perDaySalary === null ? "—" : formatINR(0)}
+          {netPayable === null ? "—" : formatINR(netPayable)}
         </div>
         <div style={{ fontFamily: "var(--font-work-sans), sans-serif", fontSize: 12, color: colors.netAccentTextMuted }}>
           {perDaySalary === null ? "Set a rate to see earnings" : "This month, after advances"}

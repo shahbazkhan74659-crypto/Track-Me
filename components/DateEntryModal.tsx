@@ -8,8 +8,8 @@ interface DateEntryModalProps {
   title: string;
   existingEntry: DateEntry | null;
   onClose: () => void;
-  onSave: (entry: DateEntry) => void;
-  onClear: () => void;
+  onSave: (entry: DateEntry) => Promise<void>;
+  onClear: () => Promise<void>;
 }
 
 const STATUS_OPTIONS: { value: Status; label: string; color: string; soft: string }[] = [
@@ -48,18 +48,40 @@ export default function DateEntryModal({ title, existingEntry, onClose, onSave, 
   const [draftAdvanceAmt, setDraftAdvanceAmt] = useState(
     existingEntry?.advanceOn ? String(existingEntry.advance) : "",
   );
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const parsedAmt = Number(draftAdvanceAmt);
   const amountInvalid = draftAdvanceOn && draftAdvanceAmt.trim() !== "" && !(Number.isFinite(parsedAmt) && parsedAmt >= 0);
   const canSave = draftStatus !== null && !amountInvalid;
 
-  const save = () => {
-    if (!canSave || draftStatus === null) return;
-    onSave({
-      status: draftStatus,
-      advanceOn: draftAdvanceOn,
-      advance: draftAdvanceOn ? (Number(draftAdvanceAmt) || 0) : 0,
-    });
+  const save = async () => {
+    if (!canSave || draftStatus === null || saving) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await onSave({
+        status: draftStatus,
+        advanceOn: draftAdvanceOn,
+        advance: draftAdvanceOn ? (Number(draftAdvanceAmt) || 0) : 0,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const clear = async () => {
+    if (saving) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await onClear();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to clear.");
+      setSaving(false);
+    }
   };
 
   return (
@@ -93,7 +115,7 @@ export default function DateEntryModal({ title, existingEntry, onClose, onSave, 
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             {existingEntry && (
               <span
-                onClick={onClear}
+                onClick={clear}
                 style={{ fontFamily: "var(--font-work-sans), sans-serif", fontSize: 12, color: colors.statusLeave, cursor: "pointer", fontWeight: 600 }}
               >
                 Clear
@@ -197,10 +219,16 @@ export default function DateEntryModal({ title, existingEntry, onClose, onSave, 
           </div>
         )}
 
+        {error && (
+          <div style={{ fontFamily: "var(--font-work-sans), sans-serif", fontSize: 12, color: colors.statusLeave, marginTop: 12 }}>
+            {error}
+          </div>
+        )}
+
         <button
           type="button"
           onClick={save}
-          disabled={!canSave}
+          disabled={!canSave || saving}
           style={{
             width: "100%",
             marginTop: 18,
@@ -210,13 +238,13 @@ export default function DateEntryModal({ title, existingEntry, onClose, onSave, 
             fontFamily: "var(--font-manrope), sans-serif",
             fontWeight: 700,
             fontSize: 14,
-            cursor: canSave ? "pointer" : "not-allowed",
-            background: canSave ? colors.accent : colors.disabledControlBackground,
-            color: canSave ? colors.pageBackground : colors.disabledControlText,
+            cursor: canSave && !saving ? "pointer" : "not-allowed",
+            background: canSave && !saving ? colors.accent : colors.disabledControlBackground,
+            color: canSave && !saving ? colors.pageBackground : colors.disabledControlText,
             transition: "background 0.15s ease",
           }}
         >
-          Done
+          {saving ? "Saving…" : "Done"}
         </button>
       </div>
     </div>

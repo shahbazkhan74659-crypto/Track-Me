@@ -4,16 +4,20 @@ import { useState } from "react";
 import { formatINR } from "@/lib/format";
 import { colors } from "@/lib/theme";
 
-export default function SalarySetupControl() {
-  // No rate can be persisted yet (backend wiring is Phase 14) — starts unset,
-  // same "unset rate" truth components/StatCards.tsx assumes. Setting a rate
-  // here does not update StatCards this phase; that connection is Phase 14.
-  const [perDaySalary, setPerDaySalary] = useState<number | null>(null);
+interface SalarySetupControlProps {
+  perDaySalary: number | null;
+  onSave: (rate: number) => Promise<void>;
+}
+
+export default function SalarySetupControl({ perDaySalary, onSave }: SalarySetupControlProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [draft, setDraft] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const openModal = () => {
     setDraft(perDaySalary === null ? "" : String(perDaySalary));
+    setError(null);
     setModalOpen(true);
   };
   const closeModal = () => setModalOpen(false);
@@ -21,10 +25,18 @@ export default function SalarySetupControl() {
   const parsedDraft = Number(draft);
   const canSave = draft.trim() !== "" && Number.isFinite(parsedDraft) && parsedDraft > 0;
 
-  const save = () => {
-    if (!canSave) return;
-    setPerDaySalary(parsedDraft);
-    setModalOpen(false);
+  const save = async () => {
+    if (!canSave || saving) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await onSave(parsedDraft);
+      setModalOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -96,7 +108,7 @@ export default function SalarySetupControl() {
                 border: `1.5px solid ${colors.border}`,
                 borderRadius: 10,
                 overflow: "hidden",
-                marginBottom: 20,
+                marginBottom: 12,
               }}
             >
               <span
@@ -130,12 +142,17 @@ export default function SalarySetupControl() {
                 }}
               />
             </div>
-            <div style={{ display: "flex", gap: 10 }}>
+            {error && (
+              <div style={{ fontFamily: "var(--font-work-sans), sans-serif", fontSize: 12, color: colors.statusLeave, marginBottom: 8 }}>
+                {error}
+              </div>
+            )}
+            <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
               <button type="button" className="btn-outline" onClick={closeModal} style={{ flex: 1 }}>
                 Cancel
               </button>
-              <button type="button" className="btn-primary" onClick={save} disabled={!canSave} style={{ flex: 1 }}>
-                Save
+              <button type="button" className="btn-primary" onClick={save} disabled={!canSave || saving} style={{ flex: 1 }}>
+                {saving ? "Saving…" : "Save"}
               </button>
             </div>
           </div>

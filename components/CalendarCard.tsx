@@ -12,6 +12,19 @@ export interface DateEntry {
   advance: number;
 }
 
+export interface CalendarView {
+  year: number;
+  month: number;
+}
+
+interface CalendarCardProps {
+  view: CalendarView;
+  onViewChange: (next: CalendarView) => void;
+  entries: Record<string, DateEntry>;
+  onSaveEntry: (cell: CalendarCell, entry: DateEntry) => Promise<void>;
+  onClearEntry: (cell: CalendarCell) => Promise<void>;
+}
+
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December",
@@ -21,7 +34,7 @@ const WEEKDAY_NAMES_FULL = [
   "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
 ];
 
-function entryKey(year: number, month: number, day: number): string {
+export function entryKey(year: number, month: number, day: number): string {
   return `${year}-${month}-${day}`;
 }
 
@@ -36,37 +49,29 @@ function LegendDot({ color, label }: { color: string; label: string }) {
   );
 }
 
-export default function CalendarCard() {
+export default function CalendarCard({ view, onViewChange, entries, onSaveEntry, onClearEntry }: CalendarCardProps) {
   const today = getTodayIST();
-  const [view, setView] = useState({ year: today.year, month: today.month });
-  // Local-only, in-memory entries — not wired to the real entries backend
-  // (app/api/entries/route.ts) yet; that connection happens in Phase 14.
-  const [entries, setEntries] = useState<Record<string, DateEntry>>({});
   const [openCell, setOpenCell] = useState<CalendarCell | null>(null);
 
   const cells = buildMonthGrid(view.year, view.month, today);
 
-  const prevMonth = () => setView(({ year, month }) => normalizeYearMonth(year, month - 1));
-  const nextMonth = () => setView(({ year, month }) => normalizeYearMonth(year, month + 1));
-  const goToday = () => setView({ year: today.year, month: today.month });
+  const prevMonth = () => onViewChange(normalizeYearMonth(view.year, view.month - 1));
+  const nextMonth = () => onViewChange(normalizeYearMonth(view.year, view.month + 1));
+  const goToday = () => onViewChange({ year: today.year, month: today.month });
 
   const openDateKey = openCell ? entryKey(openCell.year, openCell.month, openCell.day) : null;
   const modalTitle = openCell
     ? `${WEEKDAY_NAMES_FULL[openCell.weekday]}, ${MONTH_NAMES[openCell.month].slice(0, 3)} ${openCell.day}`
     : "";
 
-  const saveEntry = (entry: DateEntry) => {
-    if (!openDateKey) return;
-    setEntries((prev) => ({ ...prev, [openDateKey]: entry }));
+  const saveEntry = async (entry: DateEntry) => {
+    if (!openCell) return;
+    await onSaveEntry(openCell, entry);
     setOpenCell(null);
   };
-  const clearEntry = () => {
-    if (!openDateKey) return;
-    setEntries((prev) => {
-      const next = { ...prev };
-      delete next[openDateKey];
-      return next;
-    });
+  const clearEntry = async () => {
+    if (!openCell) return;
+    await onClearEntry(openCell);
     setOpenCell(null);
   };
 

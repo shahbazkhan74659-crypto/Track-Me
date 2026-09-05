@@ -192,7 +192,10 @@ Inserted into the roadmap 2026-09-05 — see `DECISIONS.md`'s "Phase 13 'Date En
 ### Objective
 Connect every static card, button, profile element, and the calendar on the frontend to the real backend built in Phases 3–7.
 
-**Status: Not started.**
+### Scope
+Starting this phase surfaced that no phase ever built a frontend login page — asked the owner, who chose to fold a minimal one into this phase rather than split it out (see `DECISIONS.md`'s "Login page folded into Phase 14" entry). `app/page.tsx` became an async Server Component checking the session directly (`lib/auth.ts`'s `getSessionUser`, no client round-trip) and rendering either a new `components/LoginGate.tsx` or the real app; a minimal "Log out" link was added alongside it. A new `components/AttendanceApp.tsx` coordinator now owns all shared state (view, per-day rate, entries, summary) and every fetch/mutation, converting `CalendarCard`, `StatCards`, and `SalarySetupControl` from self-contained placeholders into controlled components — exactly the integration Phases 10–13 deferred. `GET /api/calendar` is deliberately not called (the grid is already correct client-side); see `DECISIONS.md`'s "Frontend does not call GET /api/calendar" entry.
+
+**Status: Complete.** Verified 2026-09-05: `npm run build`/`npm run lint` passed clean (`/` now correctly shows as dynamic/server-rendered, since it reads cookies); grep confirmed real `fetch(` calls to `/api/auth/login`, `/api/auth/logout`, `/api/salary`, `/api/entries`, and `/api/summary`, and confirmed `/api/calendar` appears only in an explanatory code comment, never a real call; the running dev server confirmed the login form renders (username/password fields, submit button) when no session cookie is present. **Real, authenticated verification could not be done this session** — the real account's password isn't known to Claude, and creating a second test account via `scripts/seed-user.mjs` would add a permanent extra row to the real database, contradicting the single-account design without explicit sign-off. Logging in, saving a real entry/rate, and confirming live stat-card recalculation all need the owner's own manual browser check — more important here than any prior phase, since this is the first phase touching real persisted data.
 
 ## Phase 15 — Mobile View / Mobile Responsive
 
